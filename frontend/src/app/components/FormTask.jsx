@@ -1,6 +1,7 @@
 "use client"
-import React from 'react'
-import { useState } from 'react'
+
+import React from 'react';
+import { useState } from 'react';
 
 function FormTask() {
     const [title, setTitle] = useState("");
@@ -8,10 +9,9 @@ function FormTask() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(title, description);
-        const res = await fetch('${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/`, {
             method: "POST",
-            body: JSON.stringify({title, description}),
+            body: JSON.stringify({ title, description }),
             headers: {
                 "Content-Type": "application/json",
             }
