@@ -2,14 +2,17 @@
 
 import React from 'react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 function FormTask() {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const router = useRouter()
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/`, {
+
             method: "POST",
             body: JSON.stringify({ title, description }),
             headers: {
@@ -18,6 +21,7 @@ function FormTask() {
         })
         const data = await res.json()
         console.log(data)
+        router.refresh()
     };
 
   return (
