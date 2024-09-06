@@ -1,13 +1,18 @@
 "use client";
+import { useRouter } from 'next/navigation';
+
 
 function TaskCard({ task }) {
+    const router = useRouter();
+
     const handleDelete = async (id) => {
         if (window.confirm("Quieres eliminar esta tarea?")) {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/${id}
-            `, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/${id}`, {
                 method: "DELETE",
             })
-            console.log(res)
+            if (res.status === 204) {
+                router.refresh();
+            }
         }
     };
 
