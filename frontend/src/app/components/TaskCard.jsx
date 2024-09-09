@@ -1,20 +1,30 @@
 "use client";
 import { useRouter } from 'next/navigation';
-
+import {ListTask} from "./ListTask";
 
 function TaskCard({ task }) {
     const router = useRouter();
 
     const handleDelete = async (id) => {
-        if (window.confirm("Quieres eliminar esta tarea?")) {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/${id}`, {
-                method: "DELETE",
-            })
-            if (res.status === 204) {
-                router.refresh();
+        if (window.confirm("¿Quieres eliminar esta tarea?")) {
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/${id}/`, {
+                    method: "DELETE",
+                });
+    
+                if (res.ok) {
+                    // Solo actualiza la vista si la respuesta es exitosa
+                    router.refresh();
+                } else {
+                    console.error('Error en la eliminación:', res.status, res.statusText);
+                    alert('No se pudo eliminar la tarea.');
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+                alert('Ocurrió un error al intentar eliminar la tarea.');
             }
         }
-    };
+    };    
 
     return (
         <div className="bg-slate-500 px-4 py-3 mb-2 rounded-md flex justify-between items-center">
