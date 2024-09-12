@@ -23,4 +23,4 @@ async function ListTask() {
   );
 }
 
-export default ListTask
+export default ListTask;
