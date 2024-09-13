@@ -39,7 +39,7 @@ function TaskCard({ task }) {
 
     return (
         <div className="bg-slate-500 px-4 py-3 mb-2 rounded-md text-slate-200 flex justify-between items-center">
-            <div>
+            <div className="flex flex-col">
                 {
                     !edit? (
                         <h2 className="font-bold">
@@ -53,9 +53,19 @@ function TaskCard({ task }) {
                         className="p-2 bg-slate-500 border-none outline-none"/>
                     )
                 }
-                <p>
-                {task.description}
-                </p>
+                {
+                    !edit ? (
+                        <p>
+                        {task.description}
+                        </p>
+                    ) : (
+                        <textarea
+                        placeholder={task.description}
+                        className="p-2 bg-slate-500 border-none outline-none"
+                        rows={1}
+                        />
+                    )
+                }
             </div>
 
             <div className="flex justify-between gap-x-2">
