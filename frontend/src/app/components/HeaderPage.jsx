@@ -16,6 +16,9 @@ import {
   TabPanels,
 } from '@headlessui/react'
 import { Bars3Icon, MagnifyingGlassIcon, ShoppingBagIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import ListTask from './ListTask';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const navigation = {
   categories: [
@@ -135,12 +138,13 @@ const navigation = {
     },
   ],
   pages: [
-    { name: 'Company', href: '#' },
+    { name: 'Company', href: '/ListTask' },
     { name: 'Stores', href: '#' },
   ],
 }
 
 export default function HeaderPage() {
+  //const router = useRouter()
   const [open, setOpen] = useState(false)
 
   return (
@@ -266,9 +270,6 @@ export default function HeaderPage() {
       </Dialog>
 
       <header className="relative bg-white">
-        <p className="flex h-10 items-center justify-center bg-indigo-600 px-4 text-sm font-medium text-white sm:px-6 lg:px-8">
-          Get free delivery on orders over $100
-        </p>
 
         <nav aria-label="Top" className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="border-b border-gray-200">
@@ -285,7 +286,7 @@ export default function HeaderPage() {
 
               {/* Logo */}
               <div className="ml-4 flex lg:ml-0">
-                <a href="#">
+                <a href={<ListTask></ListTask>}>
                   <span className="sr-only">Your Company</span>
                   <img
                     alt=""
@@ -365,15 +366,11 @@ export default function HeaderPage() {
                     </Popover>
                   ))}
 
-                  {navigation.pages.map((page) => (
-                    <a
-                      key={page.name}
-                      href={page.href}
-                      className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
-                    >
-                      {page.name}
-                    </a>
-                  ))}
+                  <div>
+                    <Link type="button" href='/ListTask'>
+                      Tareas
+                    </Link>
+                  </div>
                 </div>
               </PopoverGroup>
 
@@ -385,18 +382,6 @@ export default function HeaderPage() {
                   <span aria-hidden="true" className="h-6 w-px bg-gray-200" />
                   <a href="#" className="text-sm font-medium text-gray-700 hover:text-gray-800">
                     Create account
-                  </a>
-                </div>
-
-                <div className="hidden lg:ml-8 lg:flex">
-                  <a href="#" className="flex items-center text-gray-700 hover:text-gray-800">
-                    <img
-                      alt=""
-                      src="https://tailwindui.com/img/flags/flag-canada.svg"
-                      className="block h-auto w-5 flex-shrink-0"
-                    />
-                    <span className="ml-3 block text-sm font-medium">CAD</span>
-                    <span className="sr-only">, change currency</span>
                   </a>
                 </div>
 
