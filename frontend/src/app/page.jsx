@@ -1,14 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Dialog, DialogPanel } from '@headlessui/react';
+import { Dialog } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
+import Ecommerce from './components/e-commerce/page';
+import TaskManager from './components/task/page';
 
 const navigation = [
   { name: 'Tareas', href: '/tareas' },
   { name: 'Inventario', href: '/inventario' },
-  { name: 'E-Commerce', href: '/ecommerce' },
+  { name: 'E-Commerce', href: '/e-commerce' },
   { name: 'Mapa', href: '/mapa' },
 ];
 
@@ -23,41 +25,35 @@ export default function Homepage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState('home');
   const router = useRouter();
   
-  // Timer for session timeout
   let timeout;
 
-  // Verificar si está logueado
   useEffect(() => {
     const loggedIn = localStorage.getItem('isLoggedIn');
     setIsLoggedIn(loggedIn === 'true');
 
-    // Función para manejar la inactividad
     const handleIdleTimeout = () => {
       handleLogout();
     };
 
-    // Reiniciar el temporizador en cada interacción
     const resetTimeout = () => {
       clearTimeout(timeout);
-      timeout = setTimeout(handleIdleTimeout, 60000); // 1 minuto
+      timeout = setTimeout(handleIdleTimeout, 60000);
     };
 
-    // Añadir event listeners para reiniciar el temporizador
     window.addEventListener('mousemove', resetTimeout);
     window.addEventListener('keypress', resetTimeout);
     
-    // Inicializar el temporizador al inicio
     resetTimeout();
 
-    // Limpiar los event listeners y el temporizador al desmontar
     return () => {
       clearTimeout(timeout);
       window.removeEventListener('mousemove', resetTimeout);
       window.removeEventListener('keypress', resetTimeout);
     };
-  }, [isLoggedIn]);
+  }, []);
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -75,14 +71,21 @@ export default function Homepage() {
   };
 
   const handleNavigation = (href) => {
-    router.push(href);
+    if (href === '/e-commerce') {
+      setCurrentPage('e-commerce');
+    } else if (href === '/tareas') {
+      setCurrentPage('tareas');
+    } else {
+      setCurrentPage('home');
+      router.push(href);
+    }
     setMobileMenuOpen(false);
   };
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn');
     setIsLoggedIn(false);
-    window.location.reload();
+    setCurrentPage('home');
   };
 
   return (
@@ -96,7 +99,7 @@ export default function Homepage() {
               className="mx-auto h-10 w-auto"
             />
             <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Sign in to your account
+              Sign in to your account
             </h2>
           </div>
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -181,10 +184,9 @@ export default function Homepage() {
               </div>
             </nav>
 
-            {/* Mobile Menu */}
             <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
               <div className="fixed inset-0 z-50" />
-              <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+              <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                 <div className="flex items-center justify-between">
                   <a href="#" className="-m-1.5 p-1.5">
                     <span className="sr-only">Your Company</span>
@@ -218,12 +220,26 @@ export default function Homepage() {
                     </div>
                   </div>
                 </div>
-              </DialogPanel>
+              </Dialog.Panel>
             </Dialog>
           </header>
+          
+          <main className="mt-16 px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
+            {currentPage === 'e-commerce' && <Ecommerce />}
+            {currentPage === 'tareas' && <TaskManager />}
+            {currentPage !== 'e-commerce' && currentPage !== 'tareas' && (
+              <div className="text-center">
+                <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+                  Bienvenido a tu Dashboard
+                </h1>
+                <p className="mt-6 text-lg leading-8 text-gray-600">
+                  Selecciona una página del menú de navegación para comenzar.
+                </p>
+              </div>
+            )}
+          </main>
         </div>
       )}
-      {/* Aquí puedes añadir el resto de tu contenido */}
     </div>
   );
 }
