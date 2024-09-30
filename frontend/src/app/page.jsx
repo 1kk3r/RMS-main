@@ -2,16 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, XMarkIcon, ArchiveBoxIcon, DocumentMagnifyingGlassIcon, BanknotesIcon, MapIcon } from '@heroicons/react/24/outline';
 import { useRouter } from 'next/navigation';
 import Ecommerce from './components/e-commerce/page';
 import TaskManager from './components/task/page';
 
 const navigation = [
-  { name: 'Tareas', href: '/tareas' },
-  { name: 'Inventario', href: '/inventario' },
-  { name: 'E-Commerce', href: '/e-commerce' },
-  { name: 'Mapa', href: '/mapa' },
+  { name: <ArchiveBoxIcon className="h-7 w-7 text-black-500"/>, href: '/tareas' },
+  { name: <DocumentMagnifyingGlassIcon className="h-7 w-7 text-black-500" />, href: '/inventario' },
+  { name: <BanknotesIcon className="h-7 w-7 text-black-500" />, href: '/e-commerce' },
+  { name: <MapIcon className="h-7 w-7 text-black-500" />, href: '/mapa' },
 ];
 
 const users = [
@@ -104,7 +104,7 @@ export default function Homepage() {
           </div>
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
             {error && <p className="text-red-500">{error}</p>}
-            <form onSubmit={handleLogin}>
+            <form class="space-y-6" onSubmit={handleLogin}>
               <div className="mb-4">
                 <label className="block text-sm font-medium leading-6 text-gray-900">Username</label>
                 <input
@@ -141,7 +141,7 @@ export default function Homepage() {
       )}
       {isLoggedIn && (
         <div className="bg-white">
-          <header className="absolute inset-x-0 top-0 z-50">
+          <header className="absolute inset-x-0 top-0 z-50 bg-white">
             <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
               <div className="flex lg:flex-1">
                 <a href="#" className="-m-1.5 p-1.5">
@@ -223,6 +223,11 @@ export default function Homepage() {
               </Dialog.Panel>
             </Dialog>
           </header>
+          <footer className="absolute inset-x-0 top-0 z-50 bg-white">
+            <div className="bg-white">
+
+            </div>
+          </footer>
           
           <main className="mt-16 px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
             {currentPage === 'e-commerce' && <Ecommerce />}
