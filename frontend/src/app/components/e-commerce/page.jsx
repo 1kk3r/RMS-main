@@ -96,7 +96,7 @@ export default function ProductListWithCartAndSearch() {
   const [cart, setCart] = useState([])
   const [query, setQuery] = useState('')
 
-  const filteredProducts = query === ''
+  const filteredProducts = query === '' || query === null
     ? products
     : products.filter((product) =>
         product.name.toLowerCase().includes(query.toLowerCase())
