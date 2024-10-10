@@ -6,6 +6,8 @@ import { Bars3Icon, XMarkIcon, ArchiveBoxIcon, DocumentMagnifyingGlassIcon, Bank
 import { useRouter } from 'next/navigation';
 import Ecommerce from './components/e-commerce/page';
 import TaskManager from './components/task/page';
+import Product from './components/products/page';
+import Map from './components/map/page';
 
 const navigation = [
   { name: <ArchiveBoxIcon className="h-7 w-7 text-black-500"/>, href: '/tareas' },
@@ -75,6 +77,10 @@ export default function Homepage() {
       setCurrentPage('e-commerce');
     } else if (href === '/tareas') {
       setCurrentPage('tareas');
+    } else if (href === '/inventario') {
+      setCurrentPage('inventario');
+    } else if (href === '/mapa') {
+      setCurrentPage('mapa');
     } else {
       setCurrentPage('home');
       router.push(href);
@@ -232,7 +238,11 @@ export default function Homepage() {
           <main className="mt-16 px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
             {currentPage === 'e-commerce' && <Ecommerce />}
             {currentPage === 'tareas' && <TaskManager />}
-            {currentPage !== 'e-commerce' && currentPage !== 'tareas' && (
+            {currentPage === 'inventario' && <Product />}
+            {currentPage === 'mapa' && <Map />}
+            {currentPage !== 'e-commerce' && currentPage !== 'tareas'
+            && currentPage !== 'inventario' && currentPage !== 'mapa'
+            && (
               <div className="text-center">
                 <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
                   Bienvenido a tu Dashboard
