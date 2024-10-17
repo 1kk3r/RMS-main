@@ -1,8 +1,6 @@
-'use client';
-
 import React, { useState, Fragment, useRef, useEffect } from 'react';
 import { Dialog, Disclosure, Transition } from '@headlessui/react';
-import { XMarkIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/24/outline';
+import { XMarkIcon, MinusIcon, PlusIcon, Squares2X2Icon, MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 const filters = [
   {
@@ -28,10 +26,21 @@ const filters = [
     id: 'size',
     name: 'Size',
     options: [
+      { value: 'xxs', label: 'XXS', checked: false },
+      { value: 'xs', label: 'XS', checked: false },
       { value: 's', label: 'S', checked: false },
       { value: 'm', label: 'M', checked: false },
       { value: 'l', label: 'L', checked: false },
       { value: 'xl', label: 'XL', checked: false },
+      { value: 'xxl', label: 'XXL', checked: false },
+      ...Array.from({ length: 57 }, (_, i) => ({
+        value: (20 + i * 0.5).toFixed(1),
+        label: (20 + i * 0.5).toFixed(1),
+        checked: false
+      })),
+      { value: 'adult', label: 'Adult', checked: false },
+      { value: '4', label: '4', checked: false },
+      { value: '5', label: '5', checked: false },
     ],
   },
 ];
@@ -45,12 +54,15 @@ export default function ProductPage() {
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [addProductOpen, setAddProductOpen] = useState(false);
+  const [editProductOpen, setEditProductOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilters, setActiveFilters] = useState({});
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
     type: '',
     category: '',
-    size: '',
+    sizes: [],
     code: '',
     image: null,
   });
@@ -62,7 +74,7 @@ export default function ProductPage() {
       href: '#',
       imageSrc: 'https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-01.jpg',
       imageAlt: "Front of men's Basic Tee in black.",
-      price: '$35',
+      price: '35',
       type: 'Apparel',
       category: 'Sportstyle',
       code: '909916-01',
@@ -86,7 +98,7 @@ export default function ProductPage() {
       price: '',
       type: '',
       category: '',
-      size: '',
+      sizes: [],
       code: '',
       image: null,
     });
@@ -96,7 +108,7 @@ export default function ProductPage() {
   };
 
   const handleNewProductChange = (e) => {
-    const { name, value, files } = e.target;
+    const { name, value, files, options } = e.target;
     if (name === 'image') {
       setNewProduct(prev => ({ ...prev, [name]: files[0] }));
     } else if (name === 'price') {
@@ -108,6 +120,11 @@ export default function ProductPage() {
         formattedValue = formattedValue.slice(0, 6) + '-' + formattedValue.slice(6);
       }
       setNewProduct(prev => ({ ...prev, [name]: formattedValue }));
+    } else if (name === 'sizes') {
+      const selectedSizes = Array.from(options)
+        .filter(option => option.selected)
+        .map(option => option.value);
+      setNewProduct(prev => ({ ...prev, [name]: selectedSizes }));
     } else {
       setNewProduct(prev => ({ ...prev, [name]: value }));
     }
@@ -121,25 +138,69 @@ export default function ProductPage() {
       href: '#',
       imageAlt: `${newProduct.name} image`,
       imageSrc: newProduct.image ? URL.createObjectURL(newProduct.image) : '',
-      sizes: [newProduct.size],
     };
 
     setProducts([...products, productToAdd]);
     handleAddProductClose();
   };
 
-  const getSizeOptions = (type) => {
-    switch (type) {
-      case 'Apparel':
-        return ['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'];
-      case 'Footwear':
-        return Array.from({length: 57}, (_, i) => (20 + i * 0.5).toFixed(1));
-      case 'Accessories':
-        return ['Adult', '4', '5'];
-      default:
-        return [];
-    }
+  const handleEditProduct = (product) => {
+    setSelectedProduct(product);
+    setNewProduct({
+      name: product.name,
+      price: product.price,
+      type: product.type,
+      category: product.category,
+      sizes: product.sizes,
+      code: product.code,
+      image: null,
+    });
+    setEditProductOpen(true);
   };
+
+  const handleUpdateProduct = (e) => {
+    e.preventDefault();
+    const updatedProducts = products.map(p => 
+      p.id === selectedProduct.id ? { ...p, ...newProduct } : p
+    );
+    setProducts(updatedProducts);
+    setEditProductOpen(false);
+    setQuickViewOpen(false);
+  };
+
+  const handleDeleteProduct = () => {
+    const updatedProducts = products.filter(p => p.id !== selectedProduct.id);
+    setProducts(updatedProducts);
+    setEditProductOpen(false);
+    setQuickViewOpen(false);
+  };
+
+  const handleFilterChange = (filterId, optionValue, isChecked) => {
+    setActiveFilters(prev => ({
+      ...prev,
+      [filterId]: {
+        ...prev[filterId],
+        [optionValue]: isChecked
+      }
+    }));
+  };
+
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilters = Object.entries(activeFilters).every(([filterId, filterValues]) => {
+      if (Object.values(filterValues).some(v => v)) {
+        return Object.entries(filterValues).some(([value, isChecked]) => 
+          isChecked && (
+            (filterId === 'type' && product.type.toLowerCase() === value.toLowerCase()) ||
+            (filterId === 'category' && product.category.toLowerCase() === value.toLowerCase()) ||
+            (filterId === 'size' && product.sizes.some(size => size.toLowerCase() === value.toLowerCase()))
+          )
+        );
+      }
+      return true;
+    });
+    return matchesSearch && matchesFilters;
+  });
 
   return (
     <div className="bg-white">
@@ -210,6 +271,7 @@ export default function ProductPage() {
                                       defaultValue={option.value}
                                       type="checkbox"
                                       defaultChecked={option.checked}
+                                      onChange={(e) => handleFilterChange(section.id, option.value, e.target.checked)}
                                       className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                     />
                                     <label
@@ -271,6 +333,7 @@ export default function ProductPage() {
                             <span className="font-medium text-gray-900">{section.name}</span>
                             <span className="ml-6 flex items-center">
                               {open ? (
+                                
                                 <MinusIcon className="h-5 w-5" aria-hidden="true" />
                               ) : (
                                 <PlusIcon className="h-5 w-5" aria-hidden="true" />
@@ -288,6 +351,7 @@ export default function ProductPage() {
                                   defaultValue={option.value}
                                   type="checkbox"
                                   defaultChecked={option.checked}
+                                  onChange={(e) => handleFilterChange(section.id, option.value, e.target.checked)}
                                   className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                                 />
                                 <label
@@ -308,12 +372,24 @@ export default function ProductPage() {
 
               {/* Product grid */}
               <div className="lg:col-span-3">
+                <div className="mb-4">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                    />
+                    <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute right-3 top-1/2 transform -translate-y-1/2" />
+                  </div>
+                </div>
                 <div className="bg-white">
                   <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
                     <h2 className="sr-only">Products</h2>
 
                     <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-                      {products.map((product) => (
+                      {filteredProducts.map((product) => (
                         <div key={product.id} className="group relative">
                           <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
                             <img
@@ -330,7 +406,7 @@ export default function ProductPage() {
                                   {product.name}
                                 </a>
                               </h3>
-                              <p  className="mt-1 text-sm text-gray-500">{product.category}</p>
+                              <p className="mt-1 text-sm text-gray-500">{product.category}</p>
                             </div>
                             <p className="text-sm font-medium text-gray-900">${product.price}</p>
                           </div>
@@ -441,10 +517,11 @@ export default function ProductPage() {
                             </div>
 
                             <button
-                              type="submit"
+                              type="button"
+                              onClick={() => handleEditProduct(selectedProduct)}
                               className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
-                              Add to bag
+                              Edit Product
                             </button>
                           </form>
                         </section>
@@ -580,20 +657,20 @@ export default function ProductPage() {
                           </div>
 
                           <div className="sm:col-span-3">
-                            <label htmlFor="size" className="block text-sm font-medium text-gray-700">
-                              Size
+                            <label htmlFor="sizes" className="block text-sm font-medium text-gray-700">
+                              Sizes
                             </label>
                             <div className="mt-1">
                               <select
-                                name="size"
-                                id="size"
-                                value={newProduct.size}
+                                name="sizes"
+                                id="sizes"
+                                multiple
+                                value={newProduct.sizes}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                <option value="">Select a size</option>
-                                {getSizeOptions(newProduct.type).map((size) => (
-                                  <option key={size} value={size}>{size}</option>
+                                {filters.find(f => f.id === 'size').options.map((size) => (
+                                  <option key={size.value} value={size.value}>{size.label}</option>
                                 ))}
                               </select>
                             </div>
@@ -651,6 +728,208 @@ export default function ProductPage() {
                             onClick={handleAddProductClose}
                           >
                             Cancel
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      {/* Edit Product Form Modal */}
+      <Transition.Root show={editProductOpen} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={setEditProductOpen}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                  <div>
+                    <div className="mt-3 text-center sm:mt-5">
+                      <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                        Edit Product
+                      </Dialog.Title>
+                      <form onSubmit={handleUpdateProduct} className="mt-2">
+                        <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                          <div className="sm:col-span-6">
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                              Product Name
+                            </label>
+                            <div className="mt-1">
+                              <input
+                                type="text"
+                                name="name"
+                                id="name"
+                                value={newProduct.name}
+                                onChange={handleNewProductChange}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                              Price
+                            </label>
+                            <div className="mt-1 relative rounded-md shadow-sm">
+                              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                <span className="text-gray-500 sm:text-sm">$</span>
+                              </div>
+                              <input
+                                type="text"
+                                name="price"
+                                id="price"
+                                value={newProduct.price}
+                                onChange={handleNewProductChange}
+                                className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                placeholder="0.00"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+                              Type
+                            </label>
+                            <div className="mt-1">
+                              <select
+                                name="type"
+                                id="type"
+                                value={newProduct.type}
+                                onChange={handleNewProductChange}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              >
+                                <option value="">Select a type</option>
+                                <option value="Accessories">Accessories</option>
+                                <option value="Apparel">Apparel</option>
+                                <option value="Footwear">Footwear</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+                              Category
+                            </label>
+                            <div className="mt-1">
+                              <select
+                                name="category"
+                                id="category"
+                                value={newProduct.category}
+                                onChange={handleNewProductChange}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              >
+                                <option value="">Select a category</option>
+                                <option value="Sportstyle">Sportstyle</option>
+                                <option value="Running/Training">Running/Training</option>
+                                <option value="Teamsport">Teamsport</option>
+                                <option value="Motorsport">Motorsport</option>
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label htmlFor="sizes" className="block text-sm font-medium text-gray-700">
+                              Sizes
+                            </label>
+                            <div className="mt-1">
+                              <select
+                                name="sizes"
+                                id="sizes"
+                                multiple
+                                value={newProduct.sizes}
+                                onChange={handleNewProductChange}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                              >
+                                {filters.find(f => f.id === 'size').options.map((size) => (
+                                  <option key={size.value} value={size.value}>{size.label}</option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-3">
+                            <label htmlFor="code" className="block text-sm font-medium text-gray-700">
+                              Code
+                            </label>
+                            <div className="mt-1">
+                              <input
+                                type="text"
+                                name="code"
+                                id="code"
+                                value={newProduct.code}
+                                onChange={handleNewProductChange}
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                                placeholder="000000-00"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="sm:col-span-6">
+                            <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+                              Product Image
+                            </label>
+                            <div className="mt-1">
+                              <input
+                                type="file"
+                                name="image"
+                                id="image"
+                                accept="image/*"
+                                onChange={handleNewProductChange}
+                                ref={fileInputRef}
+                                className="block w-full text-sm text-gray-500
+                                  file:mr-4 file:py-2 file:px-4
+                                  file:rounded-md file:border-0
+                                  file:text-sm file:font-semibold
+                                  file:bg-indigo-50 file:text-indigo-700
+                                  hover:file:bg-indigo-100"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-3 sm:gap-3">
+                          <button
+                            type="submit"
+                            className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-3"
+                          >
+                            Update Product
+                          </button>
+                          <button
+                            type="button"
+                            className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                            onClick={() => setEditProductOpen(false)}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="mt-3 inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 sm:col-start-2 sm:mt-0"
+                            onClick={handleDeleteProduct}
+                          >
+                            Delete Product
                           </button>
                         </div>
                       </form>
