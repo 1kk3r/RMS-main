@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-@e*^u$(qzq$05^v8c1rwc74zc(u#e-%67w58o+e#pth)4+aaiu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'taskapi.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',  # Nombre de tu base de datos
+        'USER': 'postgres.yknkyentdzzcpmyepmbl',      # Usuario de la base de datos
+        'PASSWORD': 'Tryndarmere1.',  # Contraseña del usuario
+        'HOST': 'aws-0-sa-east-1.pooler.supabase.com',      # Host de Supabase
+        'PORT': '6543',      # Puerto, generalmente 5432
     }
 }
 
@@ -127,5 +131,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    "http://127.0.0.1:3000"
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:8000"
 ]
