@@ -17,7 +17,7 @@ function TaskManager() {
 
     async function loadTasks() {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/`);
+            const res = await fetch(`${process.env.BACKEND_URL}/api/tasks/`);
             const tasksData = await res.json();
             setTasks(tasksData);
         } catch (err) {

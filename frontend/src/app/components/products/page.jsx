@@ -75,12 +75,12 @@ export default function ProductPage() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
+      const response = await fetch(`${process.env.BACKEND_URL}/api/products/`);
       if (!response.ok) {
         throw new Error('Failed to fetch products');
       }
       const data = await response.json();
-      setProducts(data);
+      setProducts(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error fetching products:', error);
       setProducts([]);
@@ -134,7 +134,7 @@ export default function ProductPage() {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return; // Evita múltiples envíos
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     const formData = new FormData();
@@ -155,7 +155,7 @@ export default function ProductPage() {
         throw new Error('Failed to add product');
       }
       const addedProduct = await response.json();
-      setProducts(prevProducts => [...prevProducts, addedProduct]);
+      setProducts(prevProducts => Array.isArray(prevProducts) ? [...prevProducts, addedProduct] : [addedProduct]);
       handleAddProductClose();
     } catch (error) {
       console.error('Error adding product:', error);
@@ -180,7 +180,7 @@ export default function ProductPage() {
 
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return; // Evita múltiples envíos
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     const formData = new FormData();
@@ -214,7 +214,7 @@ export default function ProductPage() {
   };
 
   const handleDeleteProduct = async () => {
-    if (isSubmitting) return; // Evita múltiples envíos
+    if (isSubmitting) return;
 
     setIsSubmitting(true);
     try {
@@ -249,7 +249,7 @@ export default function ProductPage() {
       console.error('Products is not an array:', products);
       return [];
     }
-
+    
     return products.filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesFilters = Object.entries(activeFilters).every(([filterId, filterValues]) => {
@@ -270,7 +270,6 @@ export default function ProductPage() {
 
   return (
     <div className="bg-white">
-      {/* Mobile filter dialog */}
       <Transition.Root show={mobileFiltersOpen} as={React.Fragment}>
         <Dialog as="div" className="relative z-40 lg:hidden" onClose={setMobileFiltersOpen}>
           <Transition.Child
@@ -308,7 +307,6 @@ export default function ProductPage() {
                   </button>
                 </div>
 
-                {/* Filters */}
                 <form className="mt-4 border-t border-gray-200">
                   {filters.map((section) => (
                     <Disclosure as="div" key={section.id} className="border-t border-gray-200 px-4 py-6">
@@ -364,12 +362,10 @@ export default function ProductPage() {
         <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900">New Arrivals</h1>
 
-          
-
           <div className="flex items-center">
             <button
               type="button"
-              className="-m-2 ml-4 p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
+              className="-m-2 ml-4  p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
               onClick={() => setMobileFiltersOpen(true)}
             >
               <span className="sr-only">Filters</span>
@@ -384,7 +380,6 @@ export default function ProductPage() {
           </h2>
 
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-            {/* Filters */}
             <form className="hidden lg:block">
               <h3 className="sr-only">Categories</h3>
               <ul role="list" className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900">
@@ -440,7 +435,6 @@ export default function ProductPage() {
               ))}
             </form>
 
-            {/* Product grid */}
             <div className="lg:col-span-3">
               <div className="mb-4">
                 <div className="relative">
@@ -490,7 +484,6 @@ export default function ProductPage() {
         </section>
       </main>
 
-      {/* Quick view modal */}
       <Transition.Root show={quickViewOpen} as={React.Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setQuickViewOpen}>
           <Transition.Child
@@ -563,7 +556,6 @@ export default function ProductPage() {
                           </h3>
 
                           <form>
-                            {/* Sizes */}
                             <div className="mt-10">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-sm font-medium text-gray-900">Size</h4>
@@ -604,7 +596,6 @@ export default function ProductPage() {
         </Dialog>
       </Transition.Root>
 
-      {/* Add Product Button */}
       <div className="fixed bottom-4 right-4">
         <button
           onClick={handleAddProductOpen}
@@ -614,7 +605,6 @@ export default function ProductPage() {
         </button>
       </div>
 
-      {/* Add Product Form Modal */}
       <Transition.Root show={addProductOpen} as={React.Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setAddProductOpen}>
           <Transition.Child
@@ -690,16 +680,16 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <select
-                                name="type"
                                 id="type"
+                                name="type"
                                 value={newProduct.type}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
                                 <option value="">Select a type</option>
-                                <option value="Accessories">Accessories</option>
-                                <option value="Apparel">Apparel</option>
-                                <option value="Footwear">Footwear</option>
+                                <option value="accessories">Accessories</option>
+                                <option value="apparel">Apparel</option>
+                                <option value="footwear">Footwear</option>
                               </select>
                             </div>
                           </div>
@@ -710,17 +700,17 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <select
-                                name="category"
                                 id="category"
+                                name="category"
                                 value={newProduct.category}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
                                 <option value="">Select a category</option>
-                                <option value="Sportstyle">Sportstyle</option>
-                                <option value="Running/Training">Running/Training</option>
-                                <option value="Teamsport">Teamsport</option>
-                                <option value="Motorsport">Motorsport</option>
+                                <option value="sportstyle">Sportstyle</option>
+                                <option value="running-training">Running/Training</option>
+                                <option value="teamsport">Teamsport</option>
+                                <option value="motorsport">Motorsport</option>
                               </select>
                             </div>
                           </div>
@@ -731,15 +721,17 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <select
-                                name="sizes"
                                 id="sizes"
+                                name="sizes"
                                 multiple
                                 value={newProduct.sizes}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                {filters.find(f => f.id === 'size').options.map((size) => (
-                                  <option key={size.value} value={size.value}>{size.label}</option>
+                                {filters.find(f => f.id === 'size').options.map(option => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label}
+                                  </option>
                                 ))}
                               </select>
                             </div>
@@ -747,7 +739,7 @@ export default function ProductPage() {
 
                           <div className="sm:col-span-3">
                             <label htmlFor="code" className="block text-sm font-medium text-gray-700">
-                              Code
+                              Product Code
                             </label>
                             <div className="mt-1">
                               <input
@@ -757,7 +749,6 @@ export default function ProductPage() {
                                 value={newProduct.code}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                placeholder="000000-00"
                               />
                             </div>
                           </div>
@@ -773,12 +764,7 @@ export default function ProductPage() {
                                 id="image"
                                 accept="image/*"
                                 onChange={handleNewProductChange}
-                                className="block w-full text-sm text-gray-500
-                                  file:mr-4 file:py-2 file:px-4
-                                  file:rounded-md file:border-0
-                                  file:text-sm file:font-semibold
-                                  file:bg-indigo-50 file:text-indigo-700
-                                  hover:file:bg-indigo-100"
+                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                               />
                             </div>
                           </div>
@@ -786,8 +772,8 @@ export default function ProductPage() {
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                           <button
                             type="submit"
+                            className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                             disabled={isSubmitting}
-                            className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {isSubmitting ? 'Adding...' : 'Add Product'}
                           </button>
@@ -795,7 +781,6 @@ export default function ProductPage() {
                             type="button"
                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                             onClick={handleAddProductClose}
-                            disabled={isSubmitting}
                           >
                             Cancel
                           </button>
@@ -810,7 +795,6 @@ export default function ProductPage() {
         </Dialog>
       </Transition.Root>
 
-      {/* Edit Product Form Modal */}
       <Transition.Root show={editProductOpen} as={React.Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setEditProductOpen}>
           <Transition.Child
@@ -886,16 +870,16 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <select
-                                name="type"
                                 id="type"
+                                name="type"
                                 value={newProduct.type}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
                                 <option value="">Select a type</option>
-                                <option value="Accessories">Accessories</option>
-                                <option value="Apparel">Apparel</option>
-                                <option value="Footwear">Footwear</option>
+                                <option value="accessories">Accessories</option>
+                                <option value="apparel">Apparel</option>
+                                <option value="footwear">Footwear</option>
                               </select>
                             </div>
                           </div>
@@ -906,17 +890,17 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <select
-                                name="category"
                                 id="category"
+                                name="category"
                                 value={newProduct.category}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
                                 <option value="">Select a category</option>
-                                <option value="Sportstyle">Sportstyle</option>
-                                <option value="Running/Training">Running/Training</option>
-                                <option value="Teamsport">Teamsport</option>
-                                <option value="Motorsport">Motorsport</option>
+                                <option value="sportstyle">Sportstyle</option>
+                                <option value="running-training">Running/Training</option>
+                                <option value="teamsport">Teamsport</option>
+                                <option value="motorsport">Motorsport</option>
                               </select>
                             </div>
                           </div>
@@ -927,15 +911,17 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <select
-                                name="sizes"
                                 id="sizes"
+                                name="sizes"
                                 multiple
                                 value={newProduct.sizes}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                {filters.find(f => f.id === 'size').options.map((size) => (
-                                  <option key={size.value} value={size.value}>{size.label}</option>
+                                {filters.find(f => f.id === 'size').options.map(option => (
+                                  <option key={option.value} value={option.value}>
+                                    {option.label}
+                                  </option>
                                 ))}
                               </select>
                             </div>
@@ -943,7 +929,7 @@ export default function ProductPage() {
 
                           <div className="sm:col-span-3">
                             <label htmlFor="code" className="block text-sm font-medium text-gray-700">
-                              Code
+                              Product Code
                             </label>
                             <div className="mt-1">
                               <input
@@ -953,7 +939,6 @@ export default function ProductPage() {
                                 value={newProduct.code}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                                placeholder="000000-00"
                               />
                             </div>
                           </div>
@@ -969,21 +954,16 @@ export default function ProductPage() {
                                 id="image"
                                 accept="image/*"
                                 onChange={handleNewProductChange}
-                                className="block w-full text-sm text-gray-500
-                                  file:mr-4 file:py-2 file:px-4
-                                  file:rounded-md file:border-0
-                                  file:text-sm file:font-semibold
-                                  file:bg-indigo-50 file:text-indigo-700
-                                  hover:file:bg-indigo-100"
+                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                               />
                             </div>
                           </div>
                         </div>
-                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-3 sm:gap-3">
+                        <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                           <button
                             type="submit"
+                            className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                             disabled={isSubmitting}
-                            className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-3 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             {isSubmitting ? 'Updating...' : 'Update Product'}
                           </button>
@@ -991,20 +971,21 @@ export default function ProductPage() {
                             type="button"
                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                             onClick={() => setEditProductOpen(false)}
-                            disabled={isSubmitting}
                           >
                             Cancel
                           </button>
-                          <button
-                            type="button"
-                            className="mt-3 inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 sm:col-start-2 sm:mt-0"
-                            onClick={handleDeleteProduct}
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? 'Deleting...' : 'Delete Product'}
-                          </button>
                         </div>
                       </form>
+                      <div className="mt-5">
+                        <button
+                          type="button"
+                          className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+                          onClick={handleDeleteProduct}
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? 'Deleting...' : 'Delete Product'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </Dialog.Panel>
