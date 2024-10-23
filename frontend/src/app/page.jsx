@@ -97,53 +97,64 @@ export default function Homepage() {
   return (
     <div>
       {!isLoggedIn && (
-        <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-          <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="flex min-h-screen w-full items-center justify-center bg-gray-100">
+        <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-10 shadow-xl">
+          <div className="flex flex-col items-center">
             <img
               alt="Your Company"
-              src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
-              className="mx-auto h-10 w-auto"
+              src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
+              className="h-12 w-auto"
             />
-            <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-              Sign in to your account
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              FOREVER FASTER.
             </h2>
           </div>
-          <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            {error && <p className="text-red-500">{error}</p>}
-            <form class="space-y-6" onSubmit={handleLogin}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium leading-6 text-gray-900">Username</label>
+          {error && <p className="text-center text-red-500">{error}</p>}
+          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+            <div className="space-y-4 rounded-md shadow-sm">
+              <div>
+                <label htmlFor="username" className="sr-only">
+                  Username
+                </label>
                 <input
                   id="username"
                   name="username"
-                  type="username"
+                  type="text"
+                  required
+                  className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                  placeholder="Username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  required
                 />
               </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium leading-6 text-gray-900">Password</label>
+              <div>
+                <label htmlFor="password" className="sr-only">
+                  Password
+                </label>
                 <input
                   id="password"
                   name="password"
                   type="password"
+                  required
+                  className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  required
                 />
               </div>
+            </div>
+  
+            <div>
               <button
                 type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 Login
               </button>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
+      </div>
       )}
       {isLoggedIn && (
         <div className="bg-white">
@@ -154,7 +165,7 @@ export default function Homepage() {
                   <span className="sr-only">Your Company</span>
                   <img
                     alt="Logo"
-                    src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                    src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
                     className="h-8 w-auto"
                   />
                 </a>
@@ -198,7 +209,7 @@ export default function Homepage() {
                     <span className="sr-only">Your Company</span>
                     <img
                       alt="Logo"
-                      src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+                      src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
                       className="h-8 w-auto"
                     />
                   </a>
@@ -229,11 +240,6 @@ export default function Homepage() {
               </Dialog.Panel>
             </Dialog>
           </header>
-          <footer className="absolute inset-x-0 top-0 z-50 bg-white">
-            <div className="bg-white">
-
-            </div>
-          </footer>
           
           <main className="mt-16 px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
             {currentPage === 'e-commerce' && <Ecommerce />}
@@ -250,6 +256,48 @@ export default function Homepage() {
                 <p className="mt-6 text-lg leading-8 text-gray-600">
                   Selecciona una página del menú de navegación para comenzar.
                 </p>
+                <div className="mx-auto max-w-7xl px-6 lg:px-8">
+                  <h2 className="text-center text-lg font-semibold leading-8 text-gray-900">
+                    Trusted by the world’s most innovative teams
+                  </h2>
+                  <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-6 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-5">
+                    <img
+                      alt="Transistor"
+                      src="https://tailwindui.com/plus/img/logos/158x48/transistor-logo-gray-900.svg"
+                      width={158}
+                      height={48}
+                      className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
+                    />
+                    <img
+                      alt="Reform"
+                      src="https://tailwindui.com/plus/img/logos/158x48/reform-logo-gray-900.svg"
+                      width={158}
+                      height={48}
+                      className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
+                    />
+                    <img
+                      alt="Tuple"
+                      src="https://tailwindui.com/plus/img/logos/158x48/tuple-logo-gray-900.svg"
+                      width={158}
+                      height={48}
+                      className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
+                    />
+                    <img
+                      alt="SavvyCal"
+                      src="https://tailwindui.com/plus/img/logos/158x48/savvycal-logo-gray-900.svg"
+                      width={158}
+                      height={48}
+                      className="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1"
+                    />
+                    <img
+                      alt="Statamic"
+                      src="https://tailwindui.com/plus/img/logos/158x48/statamic-logo-gray-900.svg"
+                      width={158}
+                      height={48}
+                      className="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1"
+                    />
+                  </div>
+                </div>
               </div>
             )}
           </main>
