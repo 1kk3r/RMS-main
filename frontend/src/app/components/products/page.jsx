@@ -138,13 +138,13 @@ export default function ProductPage() {
 
     setIsSubmitting(true);
     const formData = new FormData();
-    Object.keys(newProduct).forEach(key => {
-      if (key === 'sizes') {
-        formData.append(key, JSON.stringify(newProduct[key]));
-      } else {
-        formData.append(key, newProduct[key]);
-      }
-    });
+    // Object.keys(newProduct).forEach(key => {
+    //   if (key === 'sizes') {
+    //     formData.append(key, JSON.stringify(newProduct[key]));
+    //   } else {
+    //     formData.append(key, newProduct[key]);
+  //  }
+  //   });
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`, {
@@ -184,15 +184,15 @@ export default function ProductPage() {
 
     setIsSubmitting(true);
     const formData = new FormData();
-    Object.keys(newProduct).forEach(key => {
-      if (key === 'sizes') {
-        formData.append(key, JSON.stringify(newProduct[key]));
-      } else if (key === 'image' && newProduct[key]) {
-        formData.append(key, newProduct[key]);
-      } else {
-        formData.append(key, newProduct[key]);
-      }
-    });
+    // Object.keys(newProduct).forEach(key => {
+    //   if (key === 'sizes') {
+    //     formData.append(key, JSON.stringify(newProduct[key]));
+    //   } else if (key === 'image' && newProduct[key]) {
+    //     formData.append(key, newProduct[key]);
+    //   } else {
+    //     formData.append(key, newProduct[key]);
+    //   }
+    // });
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${selectedProduct.id}/`, {
@@ -829,14 +829,14 @@ export default function ProductPage() {
                       <form onSubmit={handleUpdateProduct} className="mt-2">
                         <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                           <div className="sm:col-span-6">
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="name-quickview" className="block text-sm font-medium text-gray-700">
                               Product Name
                             </label>
                             <div className="mt-1">
                               <input
                                 type="text"
-                                name="name"
-                                id="name"
+                                name="name-quickview"
+                                id="name-quickview"
                                 value={newProduct.name}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -845,7 +845,7 @@ export default function ProductPage() {
                           </div>
 
                           <div className="sm:col-span-3">
-                            <label htmlFor="price" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="price-quickview" className="block text-sm font-medium text-gray-700">
                               Price
                             </label>
                             <div className="mt-1 relative rounded-md shadow-sm">
@@ -854,8 +854,8 @@ export default function ProductPage() {
                               </div>
                               <input
                                 type="text"
-                                name="price"
-                                id="price"
+                                name="price-quickview"
+                                id="price-quickview"
                                 value={newProduct.price}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -865,13 +865,13 @@ export default function ProductPage() {
                           </div>
 
                           <div className="sm:col-span-3">
-                            <label htmlFor="type" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="type-quickview" className="block text-sm font-medium text-gray-700">
                               Type
                             </label>
                             <div className="mt-1">
                               <select
-                                id="type"
-                                name="type"
+                                id="type-quickview"
+                                name="type-quickview"
                                 value={newProduct.type}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -885,13 +885,13 @@ export default function ProductPage() {
                           </div>
 
                           <div className="sm:col-span-3">
-                            <label htmlFor="category" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="category-quickview" className="block text-sm font-medium text-gray-700">
                               Category
                             </label>
                             <div className="mt-1">
                               <select
-                                id="category"
-                                name="category"
+                                id="category-quickview"
+                                name="category-quickview"
                                 value={newProduct.category}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -906,13 +906,13 @@ export default function ProductPage() {
                           </div>
 
                           <div className="sm:col-span-3">
-                            <label htmlFor="sizes" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="sizes-quickview" className="block text-sm font-medium text-gray-700">
                               Sizes
                             </label>
                             <div className="mt-1">
                               <select
-                                id="sizes"
-                                name="sizes"
+                                id="sizes-quickview"
+                                name="sizes-quickview"
                                 multiple
                                 value={newProduct.sizes}
                                 onChange={handleNewProductChange}
@@ -928,14 +928,14 @@ export default function ProductPage() {
                           </div>
 
                           <div className="sm:col-span-3">
-                            <label htmlFor="code" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="code-quickview" className="block text-sm font-medium text-gray-700">
                               Product Code
                             </label>
                             <div className="mt-1">
                               <input
                                 type="text"
-                                name="code"
-                                id="code"
+                                name="code-quickview"
+                                id="code-quickview"
                                 value={newProduct.code}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
@@ -944,14 +944,14 @@ export default function ProductPage() {
                           </div>
 
                           <div className="sm:col-span-6">
-                            <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="image-quickview" className="block text-sm font-medium text-gray-700">
                               Product Image
                             </label>
                             <div className="mt-1">
                               <input
                                 type="file"
-                                name="image"
-                                id="image"
+                                name="image-quickview"
+                                id="image-quickview"
                                 accept="image/*"
                                 onChange={handleNewProductChange}
                                 className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
