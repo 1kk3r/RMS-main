@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import {v4} from "uuid";
 
-function TaskManager() {
+export default function TaskManager() {
     const [tasks, setTasks] = useState([]);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -19,10 +20,13 @@ function TaskManager() {
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/`);
             const tasksData = await res.json();
-            setTasks(tasksData);
+            // Asegúrate de que tasksData sea un array
+            setTasks(Array.isArray(tasksData) ? tasksData.results : []);
+            console.log(tasksData.results);
         } catch (err) {
             console.error("Error loading tasks:", err);
             setError("Error loading tasks. Please try again.");
+            setTasks([]); // Establece un array vacío en caso de error
         }
     }
 
@@ -68,7 +72,7 @@ function TaskManager() {
                 const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/${id}/`, {
                     method: "DELETE",
                 });
-    
+
                 if (res.ok) {
                     alert('Se elimino exitosamente la Tarea');
                     loadTasks();
@@ -99,11 +103,12 @@ function TaskManager() {
                     <h1 className="text-black font-bold text-2xl mb-4">Añadir Tarea</h1>
 
                     {error && <p className="text-red-500 mb-4">{error}</p>}
-                    
+
                     <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                         Título:
                     </label>
                     <input
+                        id="title"
                         type="text"
                         name="title"
                         value={title}
@@ -115,6 +120,7 @@ function TaskManager() {
                         Descripción:
                     </label>
                     <textarea
+                        id="description"
                         name="description"
                         value={description}
                         className="bg-slate-100 rounded-md p-2 mb-4 block w-full text-slate-900"
@@ -137,14 +143,18 @@ function TaskManager() {
                 <h1 className="text-white text-2xl font-bold mb-4">
                     Lista de Tareas
                 </h1>
-                {tasks.map((task) => (
-                    <TaskCard 
-                        key={task.id} 
-                        task={task} 
-                        onDelete={handleDelete} 
-                        onToggleDone={handleTaskDone} 
-                    />
-                ))}
+                {Array.isArray(tasks) ? (
+                    tasks?.map((task) => (
+                        <TaskCard 
+                            key={v4()} 
+                            task={task}
+                            onDelete={handleDelete} 
+                            on  ToggleDone={handleTaskDone} 
+                        >{console.log("asz")}</TaskCard>
+                    ))
+                ) : (
+                    <p className="text-white">No hay tareas disponibles.</p>
+                )}
             </div>
         </div>
     );
@@ -241,5 +251,3 @@ function TaskCard({ task, onDelete, onToggleDone }) {
         </div>
     );
 }
-
-export default TaskManager;
