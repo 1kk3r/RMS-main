@@ -8,6 +8,7 @@ import Ecommerce from './components/e-commerce/page';
 import TaskManager from './components/task/page';
 import Product from './components/products/page';
 import Map from './components/map/page';
+import {v4} from 'uuid'
 
 const navigation = [
   { name: <ArchiveBoxIcon className="h-7 w-7 text-black-500"/>, href: '/tareas' },
@@ -183,7 +184,7 @@ export default function Homepage() {
               <div className="hidden lg:flex lg:gap-x-12">
                 {navigation.map((item) => (
                   <button
-                    key={item.name}
+                    key={v4()}
                     onClick={() => handleNavigation(item.href)}
                     className="text-sm font-semibold leading-6 text-gray-900"
                   >
@@ -227,7 +228,7 @@ export default function Homepage() {
                     <div className="space-y-2 py-6">
                       {navigation.map((item) => (
                         <button
-                          key={item.name}
+                          key={v4()}
                           onClick={() => handleNavigation(item.href)}
                           className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                         >
