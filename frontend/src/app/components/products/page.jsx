@@ -75,17 +75,23 @@ export default function ProductPage() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      const data = await response.json();
-      setProducts(Array.isArray(data) ? data : []);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch products');
+        }
+
+        const data = await response.json();
+        console.log("Respuesta completa:", data);  // Muestra la respuesta para verificar
+
+        // Accede al array correcto (data.results en este caso)
+        const productsArray = Array.isArray(data.results) ? data.results : [];
+        setProducts(productsArray);  // Actualiza el estado con los productos
+        console.log("Productos cargados:", productsArray);
     } catch (error) {
-      console.error('Error fetching products:', error);
-      setProducts([]);
+        console.error('Error fetching products:', error);
+        setProducts([]);  // Limpia el estado en caso de error
     }
-  };
+};
 
   const handleQuickView = (product) => {
     setSelectedProduct(product);
@@ -138,13 +144,13 @@ export default function ProductPage() {
 
     setIsSubmitting(true);
     const formData = new FormData();
-    // Object.keys(newProduct).forEach(key => {
-    //   if (key === 'sizes') {
-    //     formData.append(key, JSON.stringify(newProduct[key]));
-    //   } else {
-    //     formData.append(key, newProduct[key]);
-  //  }
-  //   });
+     Object.keys(newProduct).forEach(key => {
+       if (key === 'sizes') {
+         formData.append(key, JSON.stringify(newProduct[key]));
+       } else {
+         formData.append(key, newProduct[key]);
+    }
+     });
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`, {
@@ -161,6 +167,7 @@ export default function ProductPage() {
       console.error('Error adding product:', error);
     } finally {
       setIsSubmitting(false);
+      fetchProducts();
     }
   };
 
@@ -184,15 +191,15 @@ export default function ProductPage() {
 
     setIsSubmitting(true);
     const formData = new FormData();
-    // Object.keys(newProduct).forEach(key => {
-    //   if (key === 'sizes') {
-    //     formData.append(key, JSON.stringify(newProduct[key]));
-    //   } else if (key === 'image' && newProduct[key]) {
-    //     formData.append(key, newProduct[key]);
-    //   } else {
-    //     formData.append(key, newProduct[key]);
-    //   }
-    // });
+     Object.keys(newProduct).forEach(key => {
+       if (key === 'sizes') {
+         formData.append(key, JSON.stringify(newProduct[key]));
+       } else if (key === 'image' && newProduct[key]) {
+         formData.append(key, newProduct[key]);
+       } else {
+         formData.append(key, newProduct[key]);
+       }
+     });
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${selectedProduct.id}/`, {
@@ -231,6 +238,7 @@ export default function ProductPage() {
       console.error('Error deleting product:', error);
     } finally {
       setIsSubmitting(false);
+      fetchProducts();
     }
   };
 
