@@ -20,13 +20,19 @@ export default function TaskManager() {
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/`);
             const tasksData = await res.json();
-            // Asegúrate de que tasksData sea un array
-            setTasks(Array.isArray(tasksData) ? tasksData.results : []);
-            console.log(tasksData.results);
-        } catch (err) {
-            console.error("Error loading tasks:", err);
-            setError("Error loading tasks. Please try again.");
-            setTasks([]); // Establece un array vacío en caso de error
+    
+            console.log("Respuesta completa:", tasksData);  // Verificar estructura completa
+    
+            // Validar si `results` existe y es un array
+            if (Array.isArray(tasksData.results)) {
+                setTasks(tasksData.results);
+            } else {
+                console.warn("No se encontraron resultados en 'results'.");
+                setTasks([]);  // Evitar un crash si no existe
+            }
+        } catch (error) {
+            console.error("Error al cargar tareas:", error);
+            setTasks([]);  // Manejo de errores
         }
     }
 
