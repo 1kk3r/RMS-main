@@ -1,6 +1,6 @@
 U MUST INSTALL BEFORE:
 
-Django: / pip install django djangorestframework / Python -m pip install django-cors-headers / Pip install psycopg / How to Run = (python manage.py runserver)
+Django: / pip install django djangorestframework / python -m pip install django-cors-headers / pip install psycopg / How to Run = (python manage.py runserver)
 
 NextJS: / npm install -g npm / npm install run@latest / npm install lucide-react / How to Run = (npm run dev)
 
