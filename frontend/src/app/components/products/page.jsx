@@ -75,23 +75,20 @@ export default function ProductPage() {
 
   const fetchProducts = async () => {
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch products');
-        }
-
-        const data = await response.json();
-        console.log("Respuesta completa:", data);  // Muestra la respuesta para verificar
-
-        // Accede al array correcto (data.results en este caso)
-        const productsArray = Array.isArray(data.results) ? data.results : [];
-        setProducts(productsArray);  // Actualiza el estado con los productos
-        console.log("Productos cargados:", productsArray);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const data = await response.json();
+      console.log("Respuesta completa:", data);
+      const productsArray = Array.isArray(data.results) ? data.results : [];
+      setProducts(productsArray);
+      console.log("Productos cargados:", productsArray);
     } catch (error) {
-        console.error('Error fetching products:', error);
-        setProducts([]);  // Limpia el estado en caso de error
+      console.error('Error fetching products:', error);
+      setProducts([]);
     }
-};
+  };
 
   const handleQuickView = (product) => {
     setSelectedProduct(product);
@@ -144,13 +141,13 @@ export default function ProductPage() {
 
     setIsSubmitting(true);
     const formData = new FormData();
-     Object.keys(newProduct).forEach(key => {
-       if (key === 'sizes') {
-         formData.append(key, JSON.stringify(newProduct[key]));
-       } else {
-         formData.append(key, newProduct[key]);
-    }
-     });
+    Object.keys(newProduct).forEach(key => {
+      if (key === 'sizes') {
+        formData.append(key, JSON.stringify(newProduct[key]));
+      } else {
+        formData.append(key, newProduct[key]);
+      }
+    });
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`, {
@@ -191,15 +188,15 @@ export default function ProductPage() {
 
     setIsSubmitting(true);
     const formData = new FormData();
-     Object.keys(newProduct).forEach(key => {
-       if (key === 'sizes') {
-         formData.append(key, JSON.stringify(newProduct[key]));
-       } else if (key === 'image' && newProduct[key]) {
-         formData.append(key, newProduct[key]);
-       } else {
-         formData.append(key, newProduct[key]);
-       }
-     });
+    Object.keys(newProduct).forEach(key => {
+      if (key === 'sizes') {
+        formData.append(key, JSON.stringify(newProduct[key]));
+      } else if (key === 'image' && newProduct[key]) {
+        formData.append(key, newProduct[key]);
+      } else {
+        formData.append(key, newProduct[key]);
+      }
+    });
 
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${selectedProduct.id}/`, {
@@ -257,12 +254,12 @@ export default function ProductPage() {
       console.error('Products is not an array:', products);
       return [];
     }
-    
+
     return products.filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesFilters = Object.entries(activeFilters).every(([filterId, filterValues]) => {
         if (Object.values(filterValues).some(v => v)) {
-          return Object.entries(filterValues).some(([value, isChecked]) => 
+          return Object.entries(filterValues).some(([value, isChecked]) =>
             isChecked && (
               (filterId === 'type' && product.type.toLowerCase() === value.toLowerCase()) ||
               (filterId === 'category' && product.category.toLowerCase() === value.toLowerCase()) ||

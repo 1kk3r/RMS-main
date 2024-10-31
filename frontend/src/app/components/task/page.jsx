@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {v4} from "uuid";
+import { v4 } from "uuid";
 
 export default function TaskManager() {
     const [tasks, setTasks] = useState([]);
@@ -20,19 +20,18 @@ export default function TaskManager() {
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/tasks/`);
             const tasksData = await res.json();
-    
-            console.log("Respuesta completa:", tasksData);  // Verificar estructura completa
-    
-            // Validar si `results` existe y es un array
+
+            console.log("Respuesta completa:", tasksData);
+
             if (Array.isArray(tasksData.results)) {
                 setTasks(tasksData.results);
             } else {
                 console.warn("No se encontraron resultados en 'results'.");
-                setTasks([]);  // Evitar un crash si no existe
+                setTasks([]);
             }
         } catch (error) {
             console.error("Error al cargar tareas:", error);
-            setTasks([]);  // Manejo de errores
+            setTasks([]);
         }
     }
 
@@ -134,9 +133,8 @@ export default function TaskManager() {
                     />
 
                     <button
-                        className={`${
-                            loading ? "bg-gray-500" : "bg-indigo-500"
-                        } text-white rounded-md p-2 block w-full`}
+                        className={`${loading ? "bg-gray-500" : "bg-indigo-500"
+                            } text-white rounded-md p-2 block w-full`}
                         type="submit"
                         disabled={loading}
                     >
@@ -151,11 +149,11 @@ export default function TaskManager() {
                 </h1>
                 {Array.isArray(tasks) ? (
                     tasks?.map((task) => (
-                        <TaskCard 
-                            key={v4()} 
+                        <TaskCard
+                            key={v4()}
                             task={task}
-                            onDelete={handleDelete} 
-                            on  ToggleDone={handleTaskDone} 
+                            onDelete={handleDelete}
+                            on ToggleDone={handleTaskDone}
                         >{console.log("asz")}</TaskCard>
                     ))
                 ) : (
@@ -187,7 +185,6 @@ function TaskCard({ task, onDelete, onToggleDone }) {
 
                 if (res.ok) {
                     setEdit(false);
-                    // You might want to refresh the task list here
                 } else {
                     alert('No se pudo actualizar la tarea.');
                 }

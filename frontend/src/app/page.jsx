@@ -8,10 +8,10 @@ import Ecommerce from './components/e-commerce/page';
 import TaskManager from './components/task/page';
 import Product from './components/products/page';
 import Map from './components/map/page';
-import {v4} from 'uuid'
+import { v4 } from 'uuid'
 
 const navigation = [
-  { name: <ArchiveBoxIcon className="h-7 w-7 text-black-500"/>, href: '/tareas' },
+  { name: <ArchiveBoxIcon className="h-7 w-7 text-black-500" />, href: '/tareas' },
   { name: <DocumentMagnifyingGlassIcon className="h-7 w-7 text-black-500" />, href: '/inventario' },
   { name: <BanknotesIcon className="h-7 w-7 text-black-500" />, href: '/e-commerce' },
   { name: <MapIcon className="h-7 w-7 text-black-500" />, href: '/mapa' },
@@ -30,7 +30,7 @@ export default function Homepage() {
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState('home');
   const router = useRouter();
-  
+
   let timeout;
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export default function Homepage() {
 
     window.addEventListener('mousemove', resetTimeout);
     window.addEventListener('keypress', resetTimeout);
-    
+
     resetTimeout();
 
     return () => {
@@ -99,63 +99,63 @@ export default function Homepage() {
     <div>
       {!isLoggedIn && (
         <div className="flex min-h-screen w-full items-center justify-center bg-gray-100">
-        <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-10 shadow-xl">
-          <div className="flex flex-col items-center">
-            <img
-              alt="Your Company"
-              src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
-              className="h-12 w-auto"
-            />
-            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              FOREVER FASTER.
-            </h2>
+          <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-10 shadow-xl">
+            <div className="flex flex-col items-center">
+              <img
+                alt="Your Company"
+                src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
+                className="h-12 w-auto"
+              />
+              <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                FOREVER FASTER.
+              </h2>
+            </div>
+            {error && <p className="text-center text-red-500">{error}</p>}
+            <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+              <div className="space-y-4 rounded-md shadow-sm">
+                <div>
+                  <label htmlFor="username" className="sr-only">
+                    Username
+                  </label>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    required
+                    className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="password" className="sr-only">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    required
+                    className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Login
+                </button>
+              </div>
+            </form>
           </div>
-          {error && <p className="text-center text-red-500">{error}</p>}
-          <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-            <div className="space-y-4 rounded-md shadow-sm">
-              <div>
-                <label htmlFor="username" className="sr-only">
-                  Username
-                </label>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  required
-                  className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </div>
-              <div>
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-  
-            <div>
-              <button
-                type="submit"
-                className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Login
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
       )}
       {isLoggedIn && (
         <div className="bg-white">
@@ -241,122 +241,122 @@ export default function Homepage() {
               </Dialog.Panel>
             </Dialog>
           </header>
-          
+
           <main className="mt-16 px-6 py-24 sm:px-6 sm:py-4 lg:px-8">
             {currentPage === 'e-commerce' && <Ecommerce />}
             {currentPage === 'tareas' && <TaskManager />}
             {currentPage === 'inventario' && <Product />}
             {currentPage === 'mapa' && <Map />}
             {currentPage !== 'e-commerce' && currentPage !== 'tareas'
-            && currentPage !== 'inventario' && currentPage !== 'mapa'
-            && (
-              <div className="text-center">
-                <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                SEE THE GAME.  LIKE WE DO.
-                </h1>
-                <p className="mt-6 text-lg leading-8 text-gray-600">
-                  Selecciona un modal del menú de navegación para comenzar.
-                </p>
-                <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-                  <h2 className="text-center text-base/7 font-semibold text-indigo-600">WORK FASTER.</h2>
-                  <p className="mx-auto mt-2 max-w-lg text-balance text-center text-4xl font-semibold tracking-tight text-gray-950 sm:text-5xl">
-                    Todo lo que Necesitas en una App.
+              && currentPage !== 'inventario' && currentPage !== 'mapa'
+              && (
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
+                    SEE THE GAME.  LIKE WE DO.
+                  </h1>
+                  <p className="mt-6 text-lg leading-8 text-gray-600">
+                    Selecciona un modal del menú de navegación para comenzar.
                   </p>
-                  <div className="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
-                    <div className="relative lg:row-span-2">
-                      <div className="absolute inset-px rounded-lg bg-white lg:rounded-l-[2rem]"></div>
-                      <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
-                        <div className="px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10">
-                          <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
-                            Mobile friendly
-                          </p>
-                          <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                            Facil uso desde dispositivos moviles.
-                          </p>
+                  <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
+                    <h2 className="text-center text-base/7 font-semibold text-indigo-600">WORK FASTER.</h2>
+                    <p className="mx-auto mt-2 max-w-lg text-balance text-center text-4xl font-semibold tracking-tight text-gray-950 sm:text-5xl">
+                      Todo lo que Necesitas en una App.
+                    </p>
+                    <div className="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
+                      <div className="relative lg:row-span-2">
+                        <div className="absolute inset-px rounded-lg bg-white lg:rounded-l-[2rem]"></div>
+                        <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
+                          <div className="px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10">
+                            <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
+                              Mobile friendly
+                            </p>
+                            <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
+                              Facil uso desde dispositivos moviles.
+                            </p>
+                          </div>
+                          <div className="relative min-h-[30rem] w-full grow [container-type:inline-size] max-lg:mx-auto max-lg:max-w-sm">
+                            <div className="absolute inset-x-10 bottom-0 top-10 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-gray-900 shadow-2xl">
+                              <img
+                                className="size-full object-cover object-top"
+                                src="https://tailwindui.com/plus/img/component-images/bento-03-mobile-friendly.png"
+                                alt=""
+                              />
+                            </div>
+                          </div>
                         </div>
-                        <div className="relative min-h-[30rem] w-full grow [container-type:inline-size] max-lg:mx-auto max-lg:max-w-sm">
-                          <div className="absolute inset-x-10 bottom-0 top-10 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-gray-900 shadow-2xl">
+                        <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 lg:rounded-l-[2rem]"></div>
+                      </div>
+                      <div className="relative max-lg:row-start-1">
+                        <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem]"></div>
+                        <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
+                          <div className="px-8 pt-8 sm:px-10 sm:pt-10">
+                            <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
+                              Performance
+                            </p>
+                            <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
+                              -Reduce el Trabajo y +Aumenta el Rendimiento.
+                            </p>
+                          </div>
+                          <div className="flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2">
                             <img
-                              className="size-full object-cover object-top"
-                              src="https://tailwindui.com/plus/img/component-images/bento-03-mobile-friendly.png"
+                              className="w-full max-lg:max-w-xs"
+                              src="https://tailwindui.com/plus/img/component-images/bento-03-performance.png"
                               alt=""
                             />
                           </div>
                         </div>
+                        <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem]"></div>
                       </div>
-                      <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 lg:rounded-l-[2rem]"></div>
-                    </div>
-                    <div className="relative max-lg:row-start-1">
-                      <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-t-[2rem]"></div>
-                      <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
-                        <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                          <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
-                            Performance
-                          </p>
-                          <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                            -Reduce el Trabajo y +Aumenta el Rendimiento.
-                          </p>
-                        </div>
-                        <div className="flex flex-1 items-center justify-center px-8 max-lg:pb-12 max-lg:pt-10 sm:px-10 lg:pb-2">
-                          <img
-                            className="w-full max-lg:max-w-xs"
-                            src="https://tailwindui.com/plus/img/component-images/bento-03-performance.png"
-                            alt=""
-                          />
-                        </div>
-                      </div>
-                      <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-t-[2rem]"></div>
-                    </div>
-                    <div className="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-                      <div className="absolute inset-px rounded-lg bg-white"></div>
-                      <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]">
-                        <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                          <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">Security</p>
-                          <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                            Almacenamiento y Desarrollo 100% en Cloud con Encriptados de PTP.
-                          </p>
-                        </div>
-                        <div className="flex flex-1 items-center [container-type:inline-size] max-lg:py-6 lg:pb-2">
-                          <img
-                            className="h-[min(152px,40cqw)] object-cover object-center"
-                            src="https://tailwindui.com/plus/img/component-images/bento-03-security.png"
-                            alt=""
-                          />
-                        </div>
-                      </div>
-                      <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5"></div>
-                    </div>
-                    <div className="relative lg:row-span-2">
-                      <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"></div>
-                      <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
-                        <div className="px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10">
-                          <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
-                            Powerful App
-                          </p>
-                          <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                            Pagina de Facil Entendimiento y Rapida Respuesta para Cualquier Recurso Requerido en la Tienda.
-                          </p>
-                        </div>
-                        <div className="relative min-h-[30rem] w-full grow">
-                          <div className="absolute bottom-0 left-10 right-0 top-10 overflow-hidden rounded-tl-xl bg-gray-900 shadow-2xl">
-                            <div className="flex bg-gray-800/40 ring-1 ring-white/5">
-                              <div className="-mb-px flex text-sm font-medium leading-6 text-gray-400">
-                                <div className="border-b border-r border-b-white/20 border-r-white/10 bg-white/5 px-4 py-2 text-white">
-                                  E-commerce.jsx
-                                </div>
-                                <div className="border-r border-gray-600/10 px-4 py-2">Products.jsx</div>
-                              </div>
-                            </div>
-                            <div className="px-6 pb-14 pt-6">{<Ecommerce/>}</div>
+                      <div className="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
+                        <div className="absolute inset-px rounded-lg bg-white"></div>
+                        <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]">
+                          <div className="px-8 pt-8 sm:px-10 sm:pt-10">
+                            <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">Security</p>
+                            <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
+                              Almacenamiento y Desarrollo 100% en Cloud con Encriptados de PTP.
+                            </p>
+                          </div>
+                          <div className="flex flex-1 items-center [container-type:inline-size] max-lg:py-6 lg:pb-2">
+                            <img
+                              className="h-[min(152px,40cqw)] object-cover object-center"
+                              src="https://tailwindui.com/plus/img/component-images/bento-03-security.png"
+                              alt=""
+                            />
                           </div>
                         </div>
+                        <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5"></div>
                       </div>
-                      <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"></div>
+                      <div className="relative lg:row-span-2">
+                        <div className="absolute inset-px rounded-lg bg-white max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"></div>
+                        <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
+                          <div className="px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10">
+                            <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
+                              Powerful App
+                            </p>
+                            <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
+                              Pagina de Facil Entendimiento y Rapida Respuesta para Cualquier Recurso Requerido en la Tienda.
+                            </p>
+                          </div>
+                          <div className="relative min-h-[30rem] w-full grow">
+                            <div className="absolute bottom-0 left-10 right-0 top-10 overflow-hidden rounded-tl-xl bg-gray-900 shadow-2xl">
+                              <div className="flex bg-gray-800/40 ring-1 ring-white/5">
+                                <div className="-mb-px flex text-sm font-medium leading-6 text-gray-400">
+                                  <div className="border-b border-r border-b-white/20 border-r-white/10 bg-white/5 px-4 py-2 text-white">
+                                    E-commerce.jsx
+                                  </div>
+                                  <div className="border-r border-gray-600/10 px-4 py-2">Products.jsx</div>
+                                </div>
+                              </div>
+                              <div className="px-6 pb-14 pt-6">{<Ecommerce />}</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="pointer-events-none absolute inset-px rounded-lg shadow ring-1 ring-black/5 max-lg:rounded-b-[2rem] lg:rounded-r-[2rem]"></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
           </main>
         </div>
       )}
