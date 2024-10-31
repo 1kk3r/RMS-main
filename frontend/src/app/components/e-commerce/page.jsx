@@ -133,7 +133,7 @@ export default function ProductListWithCartAndSearch() {
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Products</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Shopping</h2>
           <div className="flex items-center">
             <Combobox value={query} onChange={setQuery}>
               <div className="relative mt-1">
