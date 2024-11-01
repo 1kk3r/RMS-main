@@ -303,6 +303,7 @@ export default function ProductPage() {
                 <div className="flex items-center justify-between px-4">
                   <h2 className="text-lg font-medium text-gray-900">Filters</h2>
                   <button
+                    title="close-menu"
                     type="button"
                     className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
                     onClick={() => setMobileFiltersOpen(false)}
@@ -369,6 +370,7 @@ export default function ProductPage() {
 
           <div className="flex items-center">
             <button
+              title="filters"
               type="button"
               className="-m-2 ml-4  p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
               onClick={() => setMobileFiltersOpen(true)}
@@ -517,6 +519,7 @@ export default function ProductPage() {
                 <Dialog.Panel className="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-4xl">
                   <div className="relative flex w-full items-center overflow-hidden bg-white px-4 pb-8 pt-14 shadow-2xl sm:px-6 sm:pt-8 md:p-6 lg:p-8">
                     <button
+                      title="close-quickview"
                       type="button"
                       className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 sm:right-6 sm:top-8 md:right-6 md:top-6 lg:right-8 lg:top-8"
                       onClick={() => setQuickViewOpen(false)}
@@ -583,6 +586,7 @@ export default function ProductPage() {
                             </div>
 
                             <button
+                              title="edit-product"
                               type="button"
                               onClick={() => handleEditProduct(selectedProduct)}
                               className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -603,6 +607,7 @@ export default function ProductPage() {
 
       <div className="fixed bottom-4 right-4">
         <button
+          title="add-product"
           onClick={handleAddProductOpen}
           className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
@@ -776,6 +781,7 @@ export default function ProductPage() {
                         </div>
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                           <button
+                            title="submit"
                             type="submit"
                             className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                             disabled={isSubmitting}
@@ -783,6 +789,7 @@ export default function ProductPage() {
                             {isSubmitting ? 'Adding...' : 'Add Product'}
                           </button>
                           <button
+                            title="cancel"
                             type="button"
                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                             onClick={handleAddProductClose}
@@ -966,6 +973,7 @@ export default function ProductPage() {
                         </div>
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                           <button
+                            title="update-product"
                             type="submit"
                             className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
                             disabled={isSubmitting}
@@ -973,6 +981,7 @@ export default function ProductPage() {
                             {isSubmitting ? 'Updating...' : 'Update Product'}
                           </button>
                           <button
+                            title="cancel-edit-product"
                             type="button"
                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                             onClick={() => setEditProductOpen(false)}
@@ -983,6 +992,7 @@ export default function ProductPage() {
                       </form>
                       <div className="mt-5">
                         <button
+                          title="delete"
                           type="button"
                           className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
                           onClick={handleDeleteProduct}

@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon, ShoppingCartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { StarIcon } from '@heroicons/react/20/solid'
+import { v4 } from "uuid";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function ProductListWithCartAndSearch() {
+export default function Ecommerce() {
   const [open, setOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -19,14 +19,8 @@ export default function ProductListWithCartAndSearch() {
   const [products, setProducts] = useState([])
 
   useEffect(() => {
-    fetchProducts()
-    const eventSource = new EventSource(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/sse`)
-    eventSource.onmessage = (event) => {
-      const newProduct = JSON.parse(event.data)
-      setProducts(prevProducts => [...prevProducts, newProduct])
-    }
-    return () => eventSource.close()
-  }, [])
+    fetchProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
@@ -97,6 +91,7 @@ export default function ProductListWithCartAndSearch() {
               </div>
             </div>
             <button
+              title="open-cart"
               onClick={() => setCartOpen(true)}
               className="ml-4 p-2 text-gray-400 hover:text-gray-500"
             >
@@ -113,9 +108,10 @@ export default function ProductListWithCartAndSearch() {
 
         <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
           {filteredProducts.map((product) => (
-            <div key={product.id} className="group cursor-pointer" onClick={() => openModal(product)}>
+            <div key={v4()} className="group cursor-pointer" onClick={() => openModal(product)}>
               <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
                 <img
+                title="img-principal"
                   src={product.imageSrc}
                   alt={product.imageAlt}
                   className="h-full w-full object-cover object-center group-hover:opacity-75"
@@ -156,6 +152,7 @@ export default function ProductListWithCartAndSearch() {
                 <Dialog.Panel className="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-4xl">
                   <div className="relative flex w-full items-center overflow-hidden bg-white px-4 pb-8 pt-14 shadow-2xl sm:px-6 sm:pt-8 md:p-6 lg:p-8">
                     <button
+                      title="close-cart"
                       type="button"
                       className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 sm:right-6 sm:top-8 md:right-6 md:top-6 lg:right-8 lg:top-8"
                       onClick={() => setOpen(false)}
@@ -166,7 +163,7 @@ export default function ProductListWithCartAndSearch() {
 
                     <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
                       <div className="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
-                        <img src={selectedProduct?.imageSrc} alt={selectedProduct?.imageAlt} className="object-cover object-center" />
+                        <img title="img-quickview" src={selectedProduct?.imageSrc} alt={selectedProduct?.imageAlt} className="object-cover object-center" />
                       </div>
                       <div className="sm:col-span-8 lg:col-span-7">
                         <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">{selectedProduct?.name}</h2>
@@ -193,7 +190,7 @@ export default function ProductListWithCartAndSearch() {
                                 <div className="grid grid-cols-4 gap-4">
                                   {selectedProduct?.sizes.map((size) => (
                                     <label
-                                      key={size.name}
+                                      key={v4()}
                                       className={classNames(
                                         size.inStock
                                           ? 'cursor-pointer bg-white text-gray-900 shadow-sm'
@@ -236,6 +233,7 @@ export default function ProductListWithCartAndSearch() {
                             </div>
 
                             <button
+                              title="add-to-cart"
                               type="button"
                               className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500  focus:ring-offset-2"
                               onClick={() => addToCart(selectedProduct, selectedSize)}
@@ -287,6 +285,7 @@ export default function ProductListWithCartAndSearch() {
                           <Dialog.Title className="text-lg font-medium text-gray-900">Shopping cart</Dialog.Title>
                           <div className="ml-3 flex h-7 items-center">
                             <button
+                              title="close-panel"
                               type="button"
                               className="relative -m-2 p-2 text-gray-400 hover:text-gray-500"
                               onClick={() => setCartOpen(false)}
@@ -302,9 +301,10 @@ export default function ProductListWithCartAndSearch() {
                           <div className="flow-root">
                             <ul role="list" className="-my-6 divide-y divide-gray-200">
                               {cart.map((product) => (
-                                <li key={product.id} className="flex py-6">
+                                <li key={v4()} className="flex py-6">
                                   <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                     <img
+                                      title="img-cart"
                                       src={product.imageSrc}
                                       alt={product.imageAlt}
                                       className="h-full w-full object-cover object-center"
@@ -325,6 +325,7 @@ export default function ProductListWithCartAndSearch() {
 
                                       <div className="flex">
                                         <button
+                                          title="remove-from-cart"
                                           type="button"
                                           className="font-medium text-indigo-600 hover:text-indigo-500"
                                           onClick={() => removeFromCart(product.id)}
@@ -359,6 +360,7 @@ export default function ProductListWithCartAndSearch() {
                           <p>
                             or{' '}
                             <button
+                              title="continue-shopping"
                               type="button"
                               className="font-medium text-indigo-600 hover:text-indigo-500"
                               onClick={() => setCartOpen(false)}

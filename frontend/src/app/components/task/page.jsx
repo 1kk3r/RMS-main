@@ -133,6 +133,7 @@ export default function TaskManager() {
                     />
 
                     <button
+                        title="save"
                         className={`${loading ? "bg-gray-500" : "bg-indigo-500"
                             } text-white rounded-md p-2 block w-full`}
                         type="submit"
@@ -154,7 +155,7 @@ export default function TaskManager() {
                             task={task}
                             onDelete={handleDelete}
                             on ToggleDone={handleTaskDone}
-                        >{console.log("asz")}</TaskCard>
+                        ></TaskCard>
                     ))
                 ) : (
                     <p className="text-white">No hay tareas disponibles.</p>
@@ -231,6 +232,7 @@ function TaskCard({ task, onDelete, onToggleDone }) {
 
             <div className="flex justify-between gap-x-2">
                 <button
+                    title="mark-task"
                     className={`text-white rounded-md p-2 ${task.done ? "bg-red-500" : "bg-green-500"}`}
                     onClick={() => onToggleDone(task.id)}
                 >
@@ -238,6 +240,7 @@ function TaskCard({ task, onDelete, onToggleDone }) {
                 </button>
 
                 <button
+                    title="delete"
                     className="bg-red-500 text-white rounded-md p-2"
                     onClick={() => onDelete(task.id)}
                 >
@@ -245,6 +248,7 @@ function TaskCard({ task, onDelete, onToggleDone }) {
                 </button>
 
                 <button
+                    title="edit"
                     className="bg-indigo-500 text-white rounded-md p-2"
                     onClick={handleEdit}
                 >
