@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon, ShoppingCartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { v4 } from "uuid";
+import { fetchProductos } from '@/app/comandos';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -12,16 +13,34 @@ function classNames(...classes) {
 export default function Ecommerce() {
   const [open, setOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedProduct, setSelectedProduct] = useState([
+    {id: 0, nombre: '', precio: 0, tipe: '', categoria: '', tamaño: {tallas: []}, codigo: '', imagen: null}
+  ]);
   const [selectedSize, setSelectedSize] = useState(null)
   const [cart, setCart] = useState([])
   const [query, setQuery] = useState('')
+  const [subtotal, setSubtotal] = useState(0)
   const [products, setProducts] = useState([])
 
+  const [arrayProductos, setArrayProductos] = useState([]);
+
+
+  useEffect(() => {
+    const obtenerProductos = async () => {
+      setArrayProductos(await fetchProductos());
+      console.log("Productos cargados:", arrayProductos);
+    };
+    obtenerProductos();
+    
+  },[])
+
+/*
   useEffect(() => {
     fetchProducts();
   }, []);
+*/
 
+/*
   const fetchProducts = async () => {
     try {
       const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
@@ -38,7 +57,7 @@ export default function Ecommerce() {
       setProducts([]);
     }
   };
-
+*/
   const filteredProducts = Array.isArray(products) ?
     products.filter(product =>
       query === '' ||
@@ -47,7 +66,7 @@ export default function Ecommerce() {
 
   const openModal = (product) => {
     setSelectedProduct(product)
-    setSelectedSize(product.sizes[0])
+    setSelectedSize(product.tamaño.tallas[0])
     setOpen(true)
   }
 
@@ -66,10 +85,25 @@ export default function Ecommerce() {
     setCart(cart.filter(item => item.id !== productId))
   }
 
-  const subtotal = cart.reduce((total, item) => {
-    return total + parseFloat(item.price.replace('$', '')) * item.quantity
-  }, 0)
-
+  const nuevo_subtotal = cart.reduce((total, item) => {
+    // Verifica que item.precio sea una cadena
+    if (typeof item.precio !== 'string') {
+      console.error('Precio no es una cadena:', item);
+      return total;
+    }
+  
+    // Intenta convertir el precio a un número
+    const precio = parseFloat(item.precio.replace('$', ''));
+    if (isNaN(precio)) {
+      console.error('Precio inválido:', item.precio);
+      return total;
+    }
+  
+    // Calcula el subtotal
+    return total + precio * item.quantity;
+  }, 0);
+  
+  console.log('Subtotal:', subtotal);
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
@@ -107,18 +141,18 @@ export default function Ecommerce() {
         </div>
 
         <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-          {filteredProducts.map((product) => (
+          {arrayProductos.map((product) => (
             <div key={v4()} className="group cursor-pointer" onClick={() => openModal(product)}>
               <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
                 <img
                 title="img-principal"
-                  src={product.imageSrc}
-                  alt={product.imageAlt}
+                  src={product.imagen}
+                  alt={product.imagen}
                   className="h-full w-full object-cover object-center group-hover:opacity-75"
                 />
               </div>
-              <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
-              <p className="mt-1 text-lg font-medium text-gray-900">{product.price}</p>
+              <h3 className="mt-4 text-sm text-gray-700">{product.nombre}</h3>
+              <p className="mt-1 text-lg font-medium text-gray-900">{product.precio}</p>
             </div>
           ))}
         </div>
@@ -163,17 +197,17 @@ export default function Ecommerce() {
 
                     <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
                       <div className="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
-                        <img title="img-quickview" src={selectedProduct?.imageSrc} alt={selectedProduct?.imageAlt} className="object-cover object-center" />
+                        <img title="img-quickview" src={selectedProduct?.imagen} alt={selectedProduct?.imagen} className="object-cover object-center" />
                       </div>
                       <div className="sm:col-span-8 lg:col-span-7">
-                        <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">{selectedProduct?.name}</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">{selectedProduct?.nombre}</h2>
 
                         <section aria-labelledby="information-heading" className="mt-2">
                           <h3 id="information-heading" className="sr-only">
                             Product information
                           </h3>
 
-                          <p className="text-2xl text-gray-900">{selectedProduct?.price}</p>
+                          <p className="text-2xl text-gray-900">{selectedProduct?.precio}</p>
                         </section>
 
                         <section aria-labelledby="options-heading" className="mt-10">
@@ -188,11 +222,11 @@ export default function Ecommerce() {
                               <fieldset className="mt-4">
                                 <legend className="sr-only">Choose a size</legend>
                                 <div className="grid grid-cols-4 gap-4">
-                                  {selectedProduct?.sizes.map((size) => (
+                                  {selectedProduct?.tamaño?.tallas?.map((size) => (
                                     <label
                                       key={v4()}
                                       className={classNames(
-                                        size.inStock
+                                        size.disponibilidad
                                           ? 'cursor-pointer bg-white text-gray-900 shadow-sm'
                                           : 'cursor-not-allowed bg-gray-50 text-gray-200',
                                         'group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-gray-50 focus:outline-none sm:flex-1'
@@ -201,13 +235,13 @@ export default function Ecommerce() {
                                       <input
                                         type="radio"
                                         name="size-choice"
-                                        value={size.name}
-                                        disabled={!size.inStock}
+                                        value={size.tall}
+                                        disabled={!size.disponibilidad}
                                         className="sr-only"
-                                        onChange={() => setSelectedSize(size)}
+                                        onChange={() => setSelectedSize(size.talla)}
                                       />
-                                      <span>{size.name}</span>
-                                      {size.inStock ? (
+                                      <span>{size.talla}</span>
+                                      {size.disponibilidad ? (
                                         <span
                                           className="pointer-events-none absolute -inset-px rounded-md"
                                           aria-hidden="true"
@@ -305,8 +339,8 @@ export default function Ecommerce() {
                                   <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
                                     <img
                                       title="img-cart"
-                                      src={product.imageSrc}
-                                      alt={product.imageAlt}
+                                      src={product.imagen}
+                                      alt={product.imagen}
                                       className="h-full w-full object-cover object-center"
                                     />
                                   </div>
@@ -315,9 +349,9 @@ export default function Ecommerce() {
                                     <div>
                                       <div className="flex justify-between text-base font-medium text-gray-900">
                                         <h3>
-                                          <a href={product.href}>{product.name}</a>
+                                          <a href={product.href}>{product.nombre}</a>
                                         </h3>
-                                        <p className="ml-4">{product.price}</p>
+                                        <p className="ml-4">{product.precio}</p>
                                       </div>
                                     </div>
                                     <div className="flex flex-1 items-end justify-between text-sm">

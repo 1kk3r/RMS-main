@@ -1,36 +1,88 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Dialog } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon, ArchiveBoxIcon, DocumentMagnifyingGlassIcon, BanknotesIcon, MapIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/navigation';
-import Ecommerce from './components/e-commerce/page';
-import TaskManager from './components/task/page';
-import Product from './components/products/page';
-import Map from './components/map/page';
-import { v4 } from 'uuid'
+
+import { useEffect, useState } from "react";
+import { Dialog } from "@headlessui/react";
+import {
+  Bars3Icon,
+  XMarkIcon,
+  ArchiveBoxIcon,
+  DocumentMagnifyingGlassIcon,
+  BanknotesIcon,
+  MapIcon,
+} from "@heroicons/react/24/outline";
+import { notFound, useRouter } from "next/navigation";
+import Ecommerce from "./components/e-commerce/page";
+import TaskManager from "./components/task/page";
+import Product from "./components/products/page";
+import Map from "./components/map/page";
+import { v4 } from "uuid";
+import { supabase,seleccionar, registrar } from "./comandos";
+
+
 
 const navigation = [
-  { name: <ArchiveBoxIcon className="h-7 w-7 text-black-500" />, href: '/tareas' },
-  { name: <DocumentMagnifyingGlassIcon className="h-7 w-7 text-black-500" />, href: '/inventario' },
-  { name: <BanknotesIcon className="h-7 w-7 text-black-500" />, href: '/e-commerce' },
-  { name: <MapIcon className="h-7 w-7 text-black-500" />, href: '/mapa' },
+  {
+    name: (
+      <div className="group ">
+        <ArchiveBoxIcon className="h-7 w-7 text-black-500 transition-transform duration-300 group-hover:scale-105" />
+      </div>
+    ),
+    href: "/tareas",
+    title: "Tareas",
+  },
+  {
+    name: (
+      <div className="relative group">
+        <DocumentMagnifyingGlassIcon className="h-7 w-7 text-black-500 transition-transform duration-300 group-hover:scale-105" />
+      </div>
+    ),
+    href: "/inventario",
+    title:"inventario"
+  },
+  {
+    name: (
+      <div className="relative group">
+        <BanknotesIcon className="h-7 w-7 text-black-500 transition-transform duration-300 group-hover:scale-105" />
+      </div>
+    ),
+    href: "/e-commerce",
+    title:"e-commerce"
+  },
+  {
+    name: (
+      <div className="relative group">
+        <MapIcon className="h-7 w-7 text-black-500 transition-transform duration-300 group-hover:scale-105" />
+        
+      </div>
+    ),
+    href: "/mapa",
+    title:"mapa"
+  },
 ];
 
 const users = [
-  { username: 'iker.ca', password: '1111' },
-  { username: 'user2', password: 'password2' },
+  { username: "iker.ca", password: "1111" },
+  { username: "user2", password: "password2" },
 ];
+
+
+
 
 export default function Homepage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [currentPage, setCurrentPage] = useState('home');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [currentPage, setCurrentPage] = useState("home");
   const router = useRouter();
+  const [password_confirm, setpassword_confirm] = useState("");
+  const [password_register, setpassword_register] = useState("");
 
+
+
+  /*
   let timeout;
 
   useEffect(() => {
@@ -57,7 +109,7 @@ export default function Homepage() {
       window.removeEventListener('keypress', resetTimeout);
     };
   }, []);
-
+*/
   const handleLogin = (e) => {
     e.preventDefault();
     const foundUser = users.find(
@@ -65,34 +117,57 @@ export default function Homepage() {
     );
 
     if (foundUser) {
-      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem("isLoggedIn", "true");
       setIsLoggedIn(true);
-      setError('');
+      setError("");
     } else {
-      setError('Invalid username or password');
+      setError("Invalid username or password");
     }
   };
 
   const handleNavigation = (href) => {
-    if (href === '/e-commerce') {
-      setCurrentPage('e-commerce');
-    } else if (href === '/tareas') {
-      setCurrentPage('tareas');
-    } else if (href === '/inventario') {
-      setCurrentPage('inventario');
-    } else if (href === '/mapa') {
-      setCurrentPage('mapa');
+    if (href === "/e-commerce") {
+      setCurrentPage("e-commerce");
+    } else if (href === "/tareas") {
+      setCurrentPage("tareas");
+    } else if (href === "/inventario") {
+      setCurrentPage("inventario");
+    } else if (href === "/mapa") {
+      setCurrentPage("mapa");
     } else {
-      setCurrentPage('home');
+      setCurrentPage("home");
       router.push(href);
     }
     setMobileMenuOpen(false);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem("isLoggedIn");
     setIsLoggedIn(false);
-    setCurrentPage('home');
+    setCurrentPage("home");
+  };
+
+  const [activa, setactiva] = useState("ingreso");
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    if (
+      username !== " " &&
+      password_register !== " " &&
+      password_confirm !== " " &&
+      password_register === password_confirm &&
+      !users.some((user) => user.username === username)
+    ) {
+      users.push({ username: username, password: password_register });
+      //console.log(users);
+      setError("Registro exitoso de usuario");
+      registrar(username,password_register)
+
+      //setactiva('ingreso')
+    } else {
+      setError("Error en el registro de usuario");
+    }
+    //Evitar que el registro de usuario se haga con campos vacios
   };
 
   return (
@@ -101,6 +176,21 @@ export default function Homepage() {
         <div className="flex min-h-screen w-full items-center justify-center bg-gray-100">
           <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-10 shadow-xl">
             <div className="flex flex-col items-center">
+              <div className="flex justify-center space-x-4 ">
+                <button
+                  className="px-4 rounded-md py-2  border border-gray hover:border-gray-500 transition "
+                  onClick={() => setactiva("ingreso")}
+                >
+                  ingresar
+                </button>
+                <button
+                  className="py-2 px-4 rounded-md  border border-gray hover:border-gray-500 transition  "
+                  onClick={() => [console.log(users), setactiva("registro")]}
+                >
+                  registrarse
+                </button>
+              </div>
+
               <img
                 alt="Your Company"
                 src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
@@ -110,60 +200,131 @@ export default function Homepage() {
                 FOREVER FASTER.
               </h2>
             </div>
-            {error && <p className="text-center text-red-500">{error}</p>}
-            <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-              <div className="space-y-4 rounded-md shadow-sm">
-                <div>
-                  <label htmlFor="username" className="sr-only">
-                    Username
-                  </label>
-                  <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    autoComplete="username"
-                    required
-                    className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="password" className="sr-only">
-                    Password
-                  </label>
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                    placeholder="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                </div>
-              </div>
 
-              <div>
-                <button
-                  title="login"
-                  type="submit"
-                  className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >
-                  Login
-                </button>
-              </div>
-            </form>
+            {activa === "ingreso" ? (
+              <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+                <div className="space-y-4 rounded-md shadow-sm">
+                  <div>
+                    <label htmlFor="username" className="sr-only">
+                      Username
+                    </label>
+                    <input
+                      id="username"
+                      name="username"
+                      type="text"
+                      autoComplete="username"
+                      required
+                      className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      placeholder="Username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password" className="sr-only">
+                      Password
+                    </label>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <button
+                    title="login"
+                    type="submit"
+                    className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                  >
+                    Login
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form className="mt-/ space-y-6" onSubmit={handleRegister}>
+                <div className="space-y-4 rounded-md shadow-sm">
+                  <div>
+                    <label htmlFor="username" className="sr-only">
+                      Nombre de usuario
+                    </label>
+                    <input
+                      id="username"
+                      name="username"
+                      type="text"
+                      autoComplete="username"
+                      required
+                      className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      placeholder="Nombre de usuario"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password" className="sr-only">
+                      Contraseña
+                    </label>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      placeholder="Contraseña"
+                      value={password_register}
+                      onChange={(e) => setpassword_register(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password" className="sr-only">
+                      Confirmar Contraseña
+                    </label>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      placeholder="Confirmar Contraseña"
+                      value={password_confirm}
+                      onChange={(e) => [
+                        setpassword_confirm(e.target.value),
+                        console.log(e.target.value),
+                      ]}
+                    />
+                  </div>
+                  <div>
+                    <button
+                      title="register"
+                      type="submit"
+                      className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                    >
+                      Registrar
+                    </button>
+                  </div>
+                </div>
+              </form>
+            )}
+            <p className="mt-2 text-center text-sm text-gray-10000">{error}</p>
           </div>
         </div>
       )}
       {isLoggedIn && (
         <div className="bg-white">
           <header className="absolute inset-x-0 top-0 z-50 bg-white">
-            <nav aria-label="Global" className="flex items-center justify-between p-6 lg:px-8">
+            <nav
+              aria-label="Global"
+              className="flex items-center justify-between p-6 lg:px-8"
+            >
               <div className="flex lg:flex-1">
                 <a href="#" className="-m-1.5 p-1.5">
                   <span className="sr-only">Your Company</span>
@@ -171,6 +332,7 @@ export default function Homepage() {
                     alt="Logo"
                     src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
                     className="h-8 w-auto"
+                    onClick={() => setCurrentPage("home")}
                   />
                 </a>
               </div>
@@ -188,12 +350,13 @@ export default function Homepage() {
               <div className="hidden lg:flex lg:gap-x-12">
                 {navigation.map((item) => (
                   <button
-                    title="open-product"
                     key={v4()}
                     onClick={() => handleNavigation(item.href)}
                     className="text-sm font-semibold leading-6 text-gray-900"
+                    title={item.title}
                   >
                     {item.name}
+              
                   </button>
                 ))}
               </div>
@@ -208,7 +371,11 @@ export default function Homepage() {
               </div>
             </nav>
 
-            <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
+            <Dialog
+              open={mobileMenuOpen}
+              onClose={setMobileMenuOpen}
+              className="lg:hidden"
+            >
               <div className="fixed inset-0 z-50" />
               <Dialog.Panel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
                 <div className="flex items-center justify-between">
@@ -218,6 +385,7 @@ export default function Homepage() {
                       alt="Logo"
                       src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
                       className="h-8 w-auto"
+                      onClick={() => setCurrentPage("home")}
                     />
                   </a>
                   <button
@@ -235,38 +403,51 @@ export default function Homepage() {
                     <div className="space-y-2 py-6">
                       {navigation.map((item) => (
                         <button
-                          title="idk"
                           key={v4()}
                           onClick={() => handleNavigation(item.href)}
                           className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                          title={item.title}
                         >
                           {item.name}
                         </button>
                       ))}
+                       <button
+                  title="logout"
+                  onClick={handleLogout}
+                  className="text-sm font-semibold leading-6 text-gray-900"
+                >
+                  Log out <span aria-hidden="true">&rarr;</span>
+                </button>
                     </div>
                   </div>
+                </div>
+                <div className="hidden lg:flex lg:flex-1 lg:justify-end">
+               
                 </div>
               </Dialog.Panel>
             </Dialog>
           </header>
 
           <main className="mt-16 px-6 py-24 sm:px-6 sm:py-4 lg:px-8">
-            {currentPage === 'e-commerce' && <Ecommerce />}
-            {currentPage === 'tareas' && <TaskManager />}
-            {currentPage === 'inventario' && <Product />}
-            {currentPage === 'mapa' && <Map />}
-            {currentPage !== 'e-commerce' && currentPage !== 'tareas'
-              && currentPage !== 'inventario' && currentPage !== 'mapa'
-              && (
+            {currentPage === "e-commerce" && <Ecommerce />}
+            {currentPage === "tareas" && <TaskManager />}
+            {currentPage === "inventario" && <Product />}
+            {currentPage === "mapa" && <Map />}
+            {currentPage !== "e-commerce" &&
+              currentPage !== "tareas" &&
+              currentPage !== "inventario" &&
+              currentPage !== "mapa" && (
                 <div className="text-center">
                   <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                    SEE THE GAME.  LIKE WE DO.
+                    SEE THE GAME. LIKE WE DO.
                   </h1>
                   <p className="mt-6 text-lg leading-8 text-gray-600">
                     Selecciona un modal del menú de navegación para comenzar.
                   </p>
                   <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
-                    <h2 className="text-center text-base/7 font-semibold text-indigo-600">WORK FASTER.</h2>
+                    <h2 className="text-center text-base/7 font-semibold text-indigo-600">
+                      WORK FASTER.
+                    </h2>
                     <p className="mx-auto mt-2 max-w-lg text-balance text-center text-4xl font-semibold tracking-tight text-gray-950 sm:text-5xl">
                       Todo lo que Necesitas en una App.
                     </p>
@@ -319,9 +500,12 @@ export default function Homepage() {
                         <div className="absolute inset-px rounded-lg bg-white"></div>
                         <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]">
                           <div className="px-8 pt-8 sm:px-10 sm:pt-10">
-                            <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">Security</p>
+                            <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
+                              Security
+                            </p>
                             <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                              Almacenamiento y Desarrollo 100% en Cloud con Encriptados de PTP.
+                              Almacenamiento y Desarrollo 100% en Cloud con
+                              Encriptados de PTP.
                             </p>
                           </div>
                           <div className="flex flex-1 items-center [container-type:inline-size] max-lg:py-6 lg:pb-2">
@@ -342,7 +526,8 @@ export default function Homepage() {
                               Powerful App
                             </p>
                             <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
-                              Pagina de Facil Entendimiento y Rapida Respuesta para Cualquier Recurso Requerido en la Tienda.
+                              Pagina de Facil Entendimiento y Rapida Respuesta
+                              para Cualquier Recurso Requerido en la Tienda.
                             </p>
                           </div>
                           <div className="relative min-h-[30rem] w-full grow">
@@ -352,10 +537,15 @@ export default function Homepage() {
                                   <div className="border-b border-r border-b-white/20 border-r-white/10 bg-white/5 px-4 py-2 text-white">
                                     E-commerce.jsx
                                   </div>
-                                  <div className="border-r border-gray-600/10 px-4 py-2">Products.jsx</div>
+                                  <div className="border-r border-gray-600/10 px-4 py-2">
+                                    Products.jsx
+                                  </div>
                                 </div>
                               </div>
-                              <div className="px-6 pb-14 pt-6">{<Ecommerce />}</div>
+   
+
+
+   
                             </div>
                           </div>
                         </div>
@@ -371,3 +561,12 @@ export default function Homepage() {
     </div>
   );
 }
+
+
+
+/*
+
+                              <div className="px-6 pb-14 pt-6">
+                                {<Ecommerce />}
+                              </div>
+                              */
