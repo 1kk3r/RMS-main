@@ -4,19 +4,21 @@ import { XMarkIcon, MinusIcon, PlusIcon, Squares2X2Icon, MagnifyingGlassIcon } f
 import { CornerDownRightIcon } from 'lucide-react';
 import { fetchProductos } from '@/app/comandos';
 import { supabase } from '@/app/comandos';
+import { subirProducto } from '@/app/comandos';
+import { v4 } from 'uuid';
 const filters = [
   {
     id: 'type',
-    name: 'Type',
+    name: 'Tipo',
     options: [
-      { value: 'accessories', label: 'Accessories', checked: false },
+      { value: 'accessories', label: 'Accesorios', checked: false },
       { value: 'apparel', label: 'Apparel', checked: false },
       { value: 'footwear', label: 'Footwear', checked: false },
     ],
   },
   {
     id: 'category',
-    name: 'Category',
+    name: 'Categoria',
     options: [
       {value: 'Ropa', label: 'Ropa', checked: false},
       { value: 'sportstyle', label: 'Sportstyle', checked: false },
@@ -27,7 +29,7 @@ const filters = [
   },
   {
     id: 'size',
-    name: 'Size',
+    name: 'Tamaño',
     options: [
       { value: 'xxs', label: 'XXS', checked: false },
       { value: 'xs', label: 'XS', checked: false },
@@ -41,17 +43,6 @@ const filters = [
   },
 ];
 
-/*
-      ...Array.from({ length: 57 }, (_, i) => ({
-        value: (20 + i * 0.5).toFixed(1),
-        label: (20 + i * 0.5).toFixed(1),
-        checked: false
-      })),
-      
-      { value: 'adult', label: 'Adult', checked: false },
-      { value: '4', label: '4', checked: false },
-      { value: '5', label: '5', checked: false },
-*/
 
 
 function classNames(...classes) {
@@ -89,7 +80,7 @@ export default function ProductPage() {
     price: 0,
     type: '',
     category: '',
-    sizes: { tallas: [], disponibilidad: null },
+    sizes: { tallas: [], disponibilidad: false },
     code: '',
     image: null,
   });
@@ -100,43 +91,28 @@ export default function ProductPage() {
   useEffect(() => {
     const obtenerProductos = async () => {
       setArrayProductos(await fetchProductos());
-      console.log("Productos cargados:", arrayProductos);
+
     };
     obtenerProductos();
     
   },[])
 
 
-/*
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-*/
 
-
-  
-
-/*
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      const data = await response.json();
-      console.log("Respuesta completa:", data);
-      const productsArray = Array.isArray(data.results) ? data.results : [];
-      setProducts(productsArray);
-      console.log("Productos cargados:", productsArray);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setProducts([]);
-    }
-  };
-*/
   const handleQuickView = (product) => {
     setSelectedProduct(product);
     setQuickViewOpen(true);
+    setNewProduct({
+      id: product.id,
+      name: product.nombre,
+      price: product.precio,
+      type: product.tipe,
+      category: product.categoria,
+      sizes: { tallas: product.tamaño.tallas, disponibilidad: product.tamaño.disponibilidad },
+      code: product.codigo,
+      image: product.imagen,
+    });
+
     //console.log("Producto seleccionado:", product);
     //console.log(selectedProduct);
   };
@@ -173,16 +149,17 @@ export default function ProductPage() {
       code: '',
       image: null,
     });
+
   };
 
   //LLevar a cabo los cambios en las variables del nuevo producto
   const handleNewProductChange = (e) => {
     const { name, value, files, options } = e.target;
     //name es el nombre del input que se esta cambiando
-    if (name === 'image') {
+    if (name === 'image' || name === 'imagen') {
       setNewProduct(prev => ({ ...prev, [name]: files[0] }));
-
-    }else if (name== 'disponibilidad') {
+    }
+    else if (name== 'disponibilidad') {
       setNewProduct(prev => ({ 
         ...prev, 
         sizes: { 
@@ -190,13 +167,14 @@ export default function ProductPage() {
           disponibilidad: value 
         } 
       }));
-    } else if (name === 'price') {
+    }
+     else if (name === 'price') {
       const  numericValue = value.replace(/[^0-9]/g, '');
       const numericfinal = (parseFloat(numericValue))
       setNewProduct(prev => ({ ...prev, [name]: numericfinal }));
-      console.log("Precio:", numericfinal, typeof(numericfinal));
-      console.log(newProduct, typeof(newProduct.price));
-    } else if (name === 'code') {
+      //console.log("Precio:", numericfinal, typeof(numericfinal));
+      //console.log(newProduct, typeof(newProduct.price));
+    } else if (name === 'code' || name === 'codigo') {
       let formattedValue = value.replace(/[^0-9]/g, '').slice(0, 8);
       if (formattedValue.length > 6) {
         formattedValue = formattedValue.slice(0, 6) + '-' + formattedValue.slice(6);
@@ -243,71 +221,70 @@ export default function ProductPage() {
   const handleAddProduct = async (e) => {
 
     e.preventDefault();
-    console.log("Nuevo producto:", newProduct);
-    //console.log(newProduct.name, newProduct.price, newProduct.type, newProduct.category, newProduct.sizes, newProduct.code, newProduct.image);
-    console.log(newProduct.sizes);
+    console.log(newProduct.image)
+//    subirProducto(newProduct)
+    setAddProductOpen(false)
+    subirImagen(newProduct.image)
+   // setArrayProductos([...arrayProductos,newProduct])
+    setNewProduct({
+      id: 0,
+      name: '',
+      price: 0,
+      type: '',
+      category: '',
+      sizes: { tallas: [], disponibilidad: false },
+      code: '',
+      image: null,
+    })
     
   };
 
-  const subirProducto = async () => {
-    const {data,error} = await supabase.from('productos').insert([
-      {
-        nombre: newProduct.name,
-        precio: newProduct.price,
-        tipe: newProduct.type,
-        categoria: newProduct.category,
-        tamaño:   { tallas: newProduct.sizes.tallas },
-        codigo: newProduct.code,
-        imagen: newProduct.image
-      }
-    ])
-    if (!error){
-      console.log("Producto subido correctamente:",newProduct.id );
-      setAddProductOpen(false);
-      setArrayProductos([...arrayProductos, newProduct]);
+
+  const subirImagen = async () => {
+    if(newProduct.image == null){
+      subirProducto(newProduct)
     }
+    else{
+      const {data, error} = await supabase.storage.from('imagenes').upload(v4(), newProduct.image,{cacheControl :'3600'});
+      console.log('Imagen subida:', data);
+      if (error) {
+        console.log('Error:', error);
+      } else {
+        console.log('Imagen subida correctamente:', data.path);
+        const { data: urlData } = supabase.storage.from('imagenes').getPublicUrl(data.path);
+        console.log('URL de la imagen:', urlData.publicUrl);
+        newProduct.image = urlData.publicUrl;
+        subirProducto(newProduct)
+      }
+
+    }
+
   }
 
 
 
+  const borrarProducto = async (id) => {
+    const{data,error} = await supabase.from('productos').delete().eq('id',id).select()
+    console.log('Producto eliminado:',id)
+    arrayProductos.filter(p => p.id !== id);
+  }
 
-
-/*
-
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-    const formData = new FormData();
-    Object.keys(newProduct).forEach(key => {
-      if (key === 'sizes') {
-        formData.append(key, JSON.stringify(newProduct[key]));
-      } else {
-        formData.append(key, newProduct[key]);
-      }
-    });
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) {
-        throw new Error('Failed to add product');
-      }
-      const addedProduct = await response.json();
-      setProducts(prevProducts => Array.isArray(prevProducts) ? [...prevProducts, addedProduct] : [addedProduct]);
-      handleAddProductClose();
-    } catch (error) {
-      console.error('Error adding product:', error);
-    } finally {
-      setIsSubmitting(false);
-      fetchProducts();
-    }
-*/
 
   const handleEditProduct = (product) => {
     setSelectedProduct(product);
     setEditProductOpen(true);
+    setNewProduct({
+      id: selectedProduct.id,
+      name: selectedProduct.nombre,
+      price: selectedProduct.precio,
+      type: selectedProduct.tipe,
+      category: selectedProduct.categoria,
+      sizes: { tallas:selectedProduct.tamaño.talla ,disponibilidad: selectedProduct.tamaño.disponibilidad },
+      code: selectedProduct.codigo,
+      image: selectedProduct.imagen,
+    })
+    //console.log(newProduct)
+
 
   };
 
@@ -350,33 +327,40 @@ export default function ProductPage() {
 
 
 const actualizarProducto = async (product) => {
+  
+  console.log(product.id)
+
+
   const {data,error} = await supabase.from('productos').update([
-    {nombre: newProduct.name}
-  ]).eq('id',newProduct.id)
+    {
+      nombre: product.name,
+      precio: product.price,
+      tipe: product.type,
+      categoria: product.category,
+      tamaño:   { tallas: product.sizes.tallas },
+      codigo: product.code,
+      imagen: product.image
+
+    }
+  ]).eq('id',product.id).select()
+  setEditProductOpen(false); 
 }
 
 
-  const handleDeleteProduct = async () => {
-    if (isSubmitting) return;
+  const handleDeleteProduct = async (product) => {
 
     setIsSubmitting(true);
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${selectedProduct.id}/`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete product');
-      }
-      setProducts(prevProducts => prevProducts.filter(p => p.id !== selectedProduct.id));
-      setEditProductOpen(false);
-      setQuickViewOpen(false);
-    } catch (error) {
-      console.error('Error deleting product:', error);
-    } finally {
-      setIsSubmitting(false);
-      fetchProducts();
-    }
-  };
+    console.log(product);
+    console.log(product.id)
+
+    const {data, error} = await supabase.from('productos').delete().eq('id',product.id).select()
+    console.log('borrado:',product)
+    setArrayProductos(arrayProductos.filter(p => p.id !== product.id));
+
+    setIsSubmitting(false);
+    setEditProductOpen(false);
+    setQuickViewOpen(false);
+  }
 
   const handleFilterChange = (filterId, optionValue, isChecked) => {
     setActiveFilters(prev => ({
@@ -390,30 +374,6 @@ const actualizarProducto = async (product) => {
 
 
 
- /* 
-  const filteredProducts = useMemo(() => {
-    if (!Array.isArray(products)) {
-      console.error('Products is not an array:', products);
-      return [];
-    }
-    return products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilters = Object.entries(activeFilters).every(([filterId, filterValues]) => {
-        if (Object.values(filterValues).some(v => v)) {
-          return Object.entries(filterValues).some(([value, isChecked]) =>
-            isChecked && (
-              (filterId === 'type' && product.type.toLowerCase() === value.toLowerCase()) ||
-              (filterId === 'category' && product.category.toLowerCase() === value.toLowerCase()) ||
-              (filterId === 'size' && product.sizes.some(size => size.toLowerCase() === value.toLowerCase()))
-            )
-          );
-        }
-        return true;
-      });
-      return matchesSearch && matchesFilters;
-    });
-  }, [products, searchQuery, activeFilters]);
-*/
   
 
 
@@ -510,7 +470,7 @@ const actualizarProducto = async (product) => {
 
   <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
     <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
-      <h1 className="text-4xl font-bold tracking-tight text-gray-900">WareHouse</h1>
+      <h1 className="text-4xl font-bold tracking-tight text-gray-900">Deposito</h1>
 
       <div className="flex items-center">
         <button
@@ -589,7 +549,7 @@ const actualizarProducto = async (product) => {
             <div className="relative">
               <input
                 type="text"
-                placeholder="Search products..."
+                placeholder="Buscar productos..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
@@ -666,7 +626,7 @@ const actualizarProducto = async (product) => {
                   className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 sm:right-6 sm:top-8 md:right-6 md:top-6 lg:right-8 lg:top-8"
                   onClick={() => setQuickViewOpen(false)}
                 >
-                  <span className="sr-only">Close</span>
+                  <span className="sr-only">Cerrar</span>
                   <XMarkIcon className="h-6 w-6" aria-hidden="true" />
                 </button>
 
@@ -679,36 +639,36 @@ const actualizarProducto = async (product) => {
 
                     <section aria-labelledby="information-heading" className="mt-2">
                       <h3 id="information-heading" className="sr-only">
-                        Product information
+                        Infromación del producto
                       </h3>
 
                       <p className="text-2xl text-gray-900">${selectedProduct?.precio}</p>
 
                       <div className="mt-6">
                         <h4 className="sr-only">Type</h4>
-                        <p className="text-sm text-gray-700">Type: {selectedProduct?.tipe}</p>
+                        <p className="text-sm text-gray-700">Tipo: {selectedProduct?.tipe}</p>
                       </div>
 
                       <div className="mt-6">
-                        <h4 className="sr-only">Category</h4>
-                        <p className="text-sm text-gray-700">Category: {selectedProduct?.categoria}</p>
+                        <h4 className="sr-only">Categoria</h4>
+                        <p className="text-sm text-gray-700">Categoria: {selectedProduct?.categoria}</p>
                       </div>
 
                       <div className="mt-6">
                         <h4 className="sr-only">Code</h4>
-                        <p className="text-sm text-gray-700">Code: {selectedProduct?.codigo}</p>
+                        <p className="text-sm text-gray-700">Codigo: {selectedProduct?.codigo}</p>
                       </div>
                     </section>
 
                     <section aria-labelledby="options-heading" className="mt-10">
                       <h3 id="options-heading" className="sr-only">
-                        Product options
+                        Opciones del producto
                       </h3>
 
                       <form>
                         <div className="mt-10">
                           <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-medium text-gray-900">Size</h4>
+                            <h4 className="text-sm font-medium text-gray-900">tamaño</h4>
                           </div>
 
                           <fieldset className="mt-4">
@@ -750,7 +710,7 @@ const actualizarProducto = async (product) => {
                           onClick={() => handleEditProduct(selectedProduct)}
                           className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                         >
-                          Edit Product
+                          Editar producto
                         </button>
                       </form>
                     </section>
@@ -770,7 +730,7 @@ const actualizarProducto = async (product) => {
       onClick={handleAddProductOpen}
       className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
     >
-      Add Product
+      Añadir producto
     </button>
   </div>
 
@@ -843,7 +803,7 @@ const actualizarProducto = async (product) => {
 
                       <div className="sm:col-span-3">
                         <label htmlFor="type" className="block text-sm font-medium text-gray-700">
-                          Type
+                          Tipo
                         </label>
                         <div className="mt-1">
                           <select
@@ -863,7 +823,7 @@ const actualizarProducto = async (product) => {
 
                       <div className="sm:col-span-3">
                         <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                          Category
+                          Categoria
                         </label>
                         <div className="mt-1">
                           <select
@@ -884,13 +844,13 @@ const actualizarProducto = async (product) => {
                       </div>
                       <div className="sm:col-span-3">
                         <label htmlFor="sizes" className="block text-sm font-medium text-gray-700">
-                        disponibilidad
+                        Disponibilidad
                         </label>
                         <div className="mt-1">
                           <select
                             id="disponibilidad"
                             name="disponibilidad"
-                            value={'q'}
+                            value={newProduct.sizes.disponibilidad}
                             onChange={handleNewProductChange}
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           > 
@@ -904,14 +864,14 @@ const actualizarProducto = async (product) => {
 
                       <div className="sm:col-span-3">
                         <label htmlFor="sizes" className="block text-sm font-medium text-gray-700">
-                          Sizes
+                          Tallas
                         </label>
                         <div className="mt-1">
                           <select
                             id="sizes"
                             name="sizes"
                             multiple
-                            value={'sad'}
+                            value={newProduct.sizes.tallas}
                             onChange={handleNewProductChange}
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           >
@@ -926,7 +886,7 @@ const actualizarProducto = async (product) => {
 
                       <div className="sm:col-span-3">
                         <label htmlFor="code" className="block text-sm font-medium text-gray-700">
-                          Product Code
+                          Codigo del producto
                         </label>
                         <div className="mt-1">
                           <input
@@ -935,14 +895,14 @@ const actualizarProducto = async (product) => {
                             id="code"
                             value={newProduct.code}
                             onChange={handleNewProductChange}
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                            className="block w-full rounded-md border-gray-900 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           />
                         </div>
                       </div>
 
                       <div className="sm:col-span-6">
                         <label htmlFor="image" className="block text-sm font-medium text-gray-700">
-                          Product Image
+                          Imagen del producto
                         </label>
                         <div className="mt-1">
                           <input
@@ -961,7 +921,7 @@ const actualizarProducto = async (product) => {
                         title="submit"
                         type="submit"
                         className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                        onClick={subirProducto}
+                        onClick={() => {console.log}}
                       >
                         {isSubmitting ? 'Adding...' : 'Add Product'}
                       </button>
@@ -1013,13 +973,13 @@ const actualizarProducto = async (product) => {
               <div>
                 <div className="mt-3 text-center sm:mt-5">
                   <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                    Edit Product
+                    EDITAR PRODUCTO
                   </Dialog.Title>
-                  <form onSubmit={handleUpdateProduct} className="mt-2">
-                    <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                  <form onSubmit={(e) =>{e.preventDefault()}} className="mt-2">
+                    <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6"> 
                       <div className="sm:col-span-6">
                         <label htmlFor="name-quickview" className="block text-sm font-medium text-gray-700">
-                          Product Name
+                          Nombre del Producto
                         </label>
                         <div className="mt-1">
                           <input
@@ -1045,7 +1005,7 @@ const actualizarProducto = async (product) => {
                             type="text"
                             name="price"
                             id="price-quickview"
-                            value={selectedProduct.price}
+                            value={newProduct.price}
                             onChange={handleNewProductChange}
                             className="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             placeholder="0.00"
@@ -1103,7 +1063,7 @@ const actualizarProducto = async (product) => {
                             id="sizes-quickview"
                             name="sizes"
                             multiple
-                            value={newProduct.sizes}
+                            value={newProduct.sizes.tallas}
                             onChange={handleNewProductChange}
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           >
@@ -1123,7 +1083,7 @@ const actualizarProducto = async (product) => {
                           <select
                             id="disponibilidad-quickview"
                             name="disponibilidad"
-                            value={newProduct.sizes}
+                            value={newProduct.sizes.disponibilidad}
                             onChange={handleNewProductChange}
                             className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                           >
@@ -1161,6 +1121,7 @@ const actualizarProducto = async (product) => {
                             name="image"
                             id="image-quickview"
                             accept="image/*"
+
                             onChange={handleNewProductChange}
                             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
                           />
@@ -1172,7 +1133,7 @@ const actualizarProducto = async (product) => {
                         title="update-product"
                         type="submit"
                         className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                        onClick={(e) => [newProduct.id = selectedProduct.id, console.log(newProduct)]}  
+                        onClick={(e) => [newProduct.id = selectedProduct.id, actualizarProducto(newProduct)]}  
                       >
                         {isSubmitting ? 'Updating...' : 'Update Product'}
                       </button>
@@ -1191,10 +1152,10 @@ const actualizarProducto = async (product) => {
                       title="delete"
                       type="button"
                       className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-                      onClick={handleDeleteProduct}
+                      onClick={(e) => {handleDeleteProduct(selectedProduct)}}
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'Deleting...' : 'Delete Product'}
+                      {isSubmitting ? 'Deleting...' : 'Borrar producto'}
                     </button>
                   </div>
                 </div>
@@ -1279,4 +1240,123 @@ const actualizarProducto = async (product) => {
 
 
 
+*/
+
+
+/*
+      ...Array.from({ length: 57 }, (_, i) => ({
+        value: (20 + i * 0.5).toFixed(1),
+        label: (20 + i * 0.5).toFixed(1),
+        checked: false
+      })),
+      
+      { value: 'adult', label: 'Adult', checked: false },
+      { value: '4', label: '4', checked: false },
+      { value: '5', label: '5', checked: false },
+*/
+
+
+/*    
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${selectedProduct.id}/`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete product');
+      }
+      setProducts(prevProducts => prevProducts.filter(p => p.id !== selectedProduct.id));
+      setEditProductOpen(false);
+      setQuickViewOpen(false);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+    } finally {
+      setIsSubmitting(false);
+      fetchProducts();
+    }
+  };
+*/
+
+
+
+  
+
+/*
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const data = await response.json();
+      console.log("Respuesta completa:", data);
+      const productsArray = Array.isArray(data.results) ? data.results : [];
+      setProducts(productsArray);
+      console.log("Productos cargados:", productsArray);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      setProducts([]);
+    }
+  };
+*/
+
+
+
+ /* 
+  const filteredProducts = useMemo(() => {
+    if (!Array.isArray(products)) {
+      console.error('Products is not an array:', products);
+      return [];
+    }
+    return products.filter(product => {
+      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesFilters = Object.entries(activeFilters).every(([filterId, filterValues]) => {
+        if (Object.values(filterValues).some(v => v)) {
+          return Object.entries(filterValues).some(([value, isChecked]) =>
+            isChecked && (
+              (filterId === 'type' && product.type.toLowerCase() === value.toLowerCase()) ||
+              (filterId === 'category' && product.category.toLowerCase() === value.toLowerCase()) ||
+              (filterId === 'size' && product.sizes.some(size => size.toLowerCase() === value.toLowerCase()))
+            )
+          );
+        }
+        return true;
+      });
+      return matchesSearch && matchesFilters;
+    });
+  }, [products, searchQuery, activeFilters]);
+*/
+
+
+
+
+/*
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    const formData = new FormData();
+    Object.keys(newProduct).forEach(key => {
+      if (key === 'sizes') {
+        formData.append(key, JSON.stringify(newProduct[key]));
+      } else {
+        formData.append(key, newProduct[key]);
+      }
+    });
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`, {
+        method: 'POST',
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error('Failed to add product');
+      }
+      const addedProduct = await response.json();
+      setProducts(prevProducts => Array.isArray(prevProducts) ? [...prevProducts, addedProduct] : [addedProduct]);
+      handleAddProductClose();
+    } catch (error) {
+      console.error('Error adding product:', error);
+    } finally {
+      setIsSubmitting(false);
+      fetchProducts();
+    }
 */

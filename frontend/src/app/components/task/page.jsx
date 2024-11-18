@@ -105,7 +105,7 @@ export default function TaskManager() {
         <div className="flex mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8 gap-5">
             <div className="bg-slate-200 p-7 mb-4 rounded-lg">
                 <form onSubmit={handleSubmit}>
-                    <h1 className="text-black font-bold text-2xl mb-4">Add Task</h1>
+                    <h1 className="text-black font-bold text-2xl mb-4">Añadir tarea</h1>
 
                     {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -146,7 +146,7 @@ export default function TaskManager() {
 
             <div className="bg-slate-700 p-4 w-full rounded-lg">
                 <h1 className="text-white text-2xl font-bold mb-4">
-                    Task List
+                    Lista de tareas
                 </h1>
                 {Array.isArray(tasks) ? (
                     tasks?.map((task) => (

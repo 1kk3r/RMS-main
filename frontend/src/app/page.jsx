@@ -112,6 +112,44 @@ export default function Homepage() {
 */
   const handleLogin = (e) => {
     e.preventDefault();
+    ingresar(username,password)
+
+  };
+
+  const registrar = async (username,password) =>{
+    const {user,error} = await supabase.auth.signUp({
+      email: username,
+      password: password,
+    })
+    if (error){
+      console.log("Error en el registro:", error);
+  
+    }
+    else{
+      setError("Registro exitoso");
+  }
+}
+
+
+  const ingresar = async (username,password) => {
+    const {data,error} = await supabase.auth.signInWithPassword({
+      email: username,
+      password: password,
+    })
+    if (error){
+      console.log("Error en el ingreso:", error);
+      setError("Nombre de usuario o contraseña incorrectas");
+    }
+    else{
+      setError("Ingreso exitoso");
+      localStorage.setItem("isLoggedIn", "true");
+      setIsLoggedIn(true);
+    }
+
+  }
+
+
+  /*
     const foundUser = users.find(
       (user) => user.username === username && user.password === password
     );
@@ -121,9 +159,10 @@ export default function Homepage() {
       setIsLoggedIn(true);
       setError("");
     } else {
-      setError("Invalid username or password");
+      setError("Nombre de usuario o contraseña incorrectas");
     }
-  };
+
+  */
 
   const handleNavigation = (href) => {
     if (href === "/e-commerce") {
@@ -141,13 +180,31 @@ export default function Homepage() {
     setMobileMenuOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const { error } = await supabase.auth.signOut();
     localStorage.removeItem("isLoggedIn");
     setIsLoggedIn(false);
     setCurrentPage("home");
   };
 
   const [activa, setactiva] = useState("ingreso");
+
+  const botonIngreso = (estado,final) => {
+    if (estado === "ingreso" && final === "ingreso") {
+      return "px-4 rounded-md py-2 bg-gray-300  border border-gray hover:border-gray-500 transition ";
+    }
+    else{
+      return "px-4 rounded-md py-2  border border-gray hover:border-gray-500 transition ";
+    }
+  }
+  const botonRegistro = (estado,final) => {
+    if(estado === "registro" && final === "registro"){
+      return "px-4 rounded-md py-2 bg-gray-300  border border-gray hover:border-gray-500 transition ";
+    }
+    else{
+      return "px-4 rounded-md py-2  border border-gray hover:border-gray-500 transition ";
+    }
+  }
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -156,11 +213,11 @@ export default function Homepage() {
       password_register !== " " &&
       password_confirm !== " " &&
       password_register === password_confirm &&
-      !users.some((user) => user.username === username)
+      !users.some((user) => user.username === username ) && password_register.length >= 6
     ) {
-      users.push({ username: username, password: password_register });
+      registrar(username,password_register)
+      
       //console.log(users);
-      setError("Registro exitoso de usuario");
       registrar(username,password_register)
 
       //setactiva('ingreso')
@@ -178,26 +235,27 @@ export default function Homepage() {
             <div className="flex flex-col items-center">
               <div className="flex justify-center space-x-4 ">
                 <button
-                  className="px-4 rounded-md py-2  border border-gray hover:border-gray-500 transition "
-                  onClick={() => setactiva("ingreso")}
+                  className={botonIngreso(activa,"ingreso")}
+                  onClick={() => [setactiva("ingreso")]}
                 >
                   ingresar
                 </button>
                 <button
-                  className="py-2 px-4 rounded-md  border border-gray hover:border-gray-500 transition  "
-                  onClick={() => [console.log(users), setactiva("registro")]}
+                  className={botonRegistro(activa,"registro")}
+                  onClick={() => [ setactiva("registro")]}
                 >
                   registrarse
                 </button>
               </div>
 
               <img
-                alt="Your Company"
-                src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
-                className="h-12 w-auto"
+                alt="Logo provisional"
+                title='Logo Provisional'
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBEdGyhY43kLvgJXnkmLJZWAwh_un3-EkKiw&s"
+                className="h-12 w-auto mt-5"
               />
               <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                FOREVER FASTER.
+                BIENVENIDO
               </h2>
             </div>
 
@@ -206,7 +264,7 @@ export default function Homepage() {
                 <div className="space-y-4 rounded-md shadow-sm">
                   <div>
                     <label htmlFor="username" className="sr-only">
-                      Username
+                      Correo electronico
                     </label>
                     <input
                       id="username"
@@ -215,14 +273,14 @@ export default function Homepage() {
                       autoComplete="username"
                       required
                       className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      placeholder="Username"
+                      placeholder="Correo electronico"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                     />
                   </div>
                   <div>
                     <label htmlFor="password" className="sr-only">
-                      Password
+                      Contraseña
                     </label>
                     <input
                       id="password"
@@ -231,7 +289,7 @@ export default function Homepage() {
                       autoComplete="current-password"
                       required
                       className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      placeholder="Password"
+                      placeholder="Contraseña"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
@@ -243,8 +301,7 @@ export default function Homepage() {
                     title="login"
                     type="submit"
                     className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                  >
-                    Login
+                  >Ingresar
                   </button>
                 </div>
               </form>
@@ -298,7 +355,7 @@ export default function Homepage() {
                       value={password_confirm}
                       onChange={(e) => [
                         setpassword_confirm(e.target.value),
-                        console.log(e.target.value),
+                        //console.log(e.target.value),
                       ]}
                     />
                   </div>
@@ -330,7 +387,7 @@ export default function Homepage() {
                   <span className="sr-only">Your Company</span>
                   <img
                     alt="Logo"
-                    src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
+                    src="https://www.pngplay.com/wp-content/uploads/7/Home-Logo-Background-PNG-Image.png"
                     className="h-8 w-auto"
                     onClick={() => setCurrentPage("home")}
                   />
@@ -338,12 +395,12 @@ export default function Homepage() {
               </div>
               <div className="flex lg:hidden">
                 <button
-                  title="open-main-menu"
+                  title="Abrir menu principal"
                   type="button"
                   onClick={() => setMobileMenuOpen(true)}
                   className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
                 >
-                  <span className="sr-only">Open main menu</span>
+                  <span className="sr-only">Abrir menu principal</span>
                   <Bars3Icon aria-hidden="true" className="h-6 w-6" />
                 </button>
               </div>
@@ -366,7 +423,7 @@ export default function Homepage() {
                   onClick={handleLogout}
                   className="text-sm font-semibold leading-6 text-gray-900"
                 >
-                  Log out <span aria-hidden="true">&rarr;</span>
+                  Cerrar sesión <span aria-hidden="true">&rarr;</span>
                 </button>
               </div>
             </nav>
@@ -416,7 +473,7 @@ export default function Homepage() {
                   onClick={handleLogout}
                   className="text-sm font-semibold leading-6 text-gray-900"
                 >
-                  Log out <span aria-hidden="true">&rarr;</span>
+                  Cerrar sesión <span aria-hidden="true">&rarr;</span>
                 </button>
                     </div>
                   </div>
@@ -438,9 +495,7 @@ export default function Homepage() {
               currentPage !== "inventario" &&
               currentPage !== "mapa" && (
                 <div className="text-center">
-                  <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-                    SEE THE GAME. LIKE WE DO.
-                  </h1>
+        
                   <p className="mt-6 text-lg leading-8 text-gray-600">
                     Selecciona un modal del menú de navegación para comenzar.
                   </p>
@@ -457,7 +512,7 @@ export default function Homepage() {
                         <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
                           <div className="px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10">
                             <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
-                              Mobile friendly
+                              Amigable con Dispositivos Moviles
                             </p>
                             <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
                               Facil uso desde dispositivos moviles.
@@ -480,7 +535,7 @@ export default function Homepage() {
                         <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
                           <div className="px-8 pt-8 sm:px-10 sm:pt-10">
                             <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
-                              Performance
+                              Rendimiento
                             </p>
                             <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
                               -Reduce el Trabajo y +Aumenta el Rendimiento.
@@ -501,7 +556,7 @@ export default function Homepage() {
                         <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)]">
                           <div className="px-8 pt-8 sm:px-10 sm:pt-10">
                             <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
-                              Security
+                              Securidad
                             </p>
                             <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
                               Almacenamiento y Desarrollo 100% en Cloud con
@@ -523,7 +578,7 @@ export default function Homepage() {
                         <div className="relative flex h-full flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
                           <div className="px-8 pb-3 pt-8 sm:px-10 sm:pb-0 sm:pt-10">
                             <p className="mt-2 text-lg/7 font-medium tracking-tight text-gray-950 max-lg:text-center">
-                              Powerful App
+                              Aplicación poderosa
                             </p>
                             <p className="mt-2 max-w-lg text-sm/6 text-gray-600 max-lg:text-center">
                               Pagina de Facil Entendimiento y Rapida Respuesta

@@ -1,6 +1,19 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+export const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,{
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false,
+    detectSessionInUrl: false
+  }
+})
+
+export const supabase_admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+  auth: {
+    autoRefreshToken: false,
+    persistSession: false
+  }
+})
 
 export const seleccionar = async () => {
     const { data, error } = await supabase.from('usuarios').select()
@@ -32,7 +45,27 @@ export const fetchProductos = async () => {
 }
 
 
-
+export const subirProducto = async (producto_nuevo) => {
+  const {data,error} = await supabase.from('productos').insert([
+    {
+      nombre: producto_nuevo.name,
+      precio: producto_nuevo.price,
+      tipe: producto_nuevo.type,
+      categoria: producto_nuevo.category,
+      tamaño:   { tallas: producto_nuevo.sizes.tallas },
+      codigo: producto_nuevo.code,
+      imagen: producto_nuevo.image
+    }
+  ])
+  if (!error){
+    console.log("Producto subido correctamente:", );
+    return true;
+  }
+  else{
+    console.log("Error al subir el producto:", error);
+    return false;
+  }
+}
 
 
 
