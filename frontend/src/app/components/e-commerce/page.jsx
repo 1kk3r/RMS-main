@@ -4,80 +4,48 @@ import React, { useState, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon, ShoppingCartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { v4 } from "uuid";
-import { fetchProductos } from '@/app/comandos';
+import { fetchProductos, supabase } from '@/app/comandos';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
 }
 
-export default function Ecommerce() {
+export default function EcommerceWithWebpay() {
   const [open, setOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
-  const [selectedProduct, setSelectedProduct] = useState([
-    {
-      id: 0, 
-      nombre: '', 
-      precio: 0, 
-      tipe: '', 
-      categoria: '', 
-      tamaño: {tallas: [],disponibilidad:false}, 
-      codigo: '', 
-      imagen: null}
-  ]);
+  const [selectedProduct, setSelectedProduct] = useState({
+    id: 0, 
+    nombre: '', 
+    precio: 0, 
+    tipe: '', 
+    categoria: '', 
+    tamaño: {tallas: [],disponibilidad:false}, 
+    codigo: '', 
+    imagen: null
+  })
   const [selectedSize, setSelectedSize] = useState(null)
   const [cart, setCart] = useState([])
   const [query, setQuery] = useState('')
   const [subtotal, setSubtotal] = useState(0)
-  const [products, setProducts] = useState([])
-
-  const [arrayProductos, setArrayProductos] = useState([]);
-
+  const [arrayProductos, setArrayProductos] = useState([])
+  const [showPaymentForm, setShowPaymentForm] = useState(false)
+  const [customer, setCustomer] = useState({
+    name: '',
+    email: '',
+    address: '',
+  })
 
   useEffect(() => {
     const obtenerProductos = async () => {
       setArrayProductos(await fetchProductos());
-
     };
     obtenerProductos();
-    
-  },[])
-
-/*
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-*/
-
-/*
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      const data = await response.json();
-      console.log(data);
-      const productsArray = Array.isArray(data.results) ? data.results : [];
-      setProducts(productsArray);
-      console.log("Productos cargados:", productsArray);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setProducts([]);
-    }
-  };
-*/
-  const filteredProducts = Array.isArray(products) ?
-    products.filter(product =>
-      query === '' ||
-      product.name.toLowerCase().includes(query.toLowerCase())
-    ) : []
+  }, [])
 
   const openModal = (product) => {
     setSelectedProduct(product)
     setSelectedSize(product.tamaño.tallas)
     setOpen(true)
-    console.log("Producto seleccionado:", product);
-    console.log(typeof(product.precio))
   }
 
   const addToCart = (product, size) => {
@@ -96,19 +64,35 @@ export default function Ecommerce() {
   }
 
   const nuevo_subtotal = cart.reduce((total, item) => {
-    // Verifica que item.precio sea una cadena
-  
-  
-    // Intenta convertir el precio a un número
     if (isNaN(item.precio)) {
       console.error('Precio inválido:', item.precio);
       return total;  
     }
-  
-    // Calcula el subtotal
     return total + item.precio * 1
   }, 0);
-  
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCustomer({ ...customer, [name]: value });
+  };
+
+  const handlePayment = async () => {
+    try {
+      const response = await fetch('/api/process-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ customer, amount: nuevo_subtotal }),
+      });
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+    }
+  };
 
   return (
     <div className="bg-white">
@@ -151,7 +135,7 @@ export default function Ecommerce() {
             <div key={v4()} className="group cursor-pointer" onClick={() => openModal(product)}>
               <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-lg bg-gray-200 xl:aspect-h-8 xl:aspect-w-7">
                 <img
-                title="img-principal"
+                  title="img-principal"
                   src={product.imagen}
                   alt={product.imagen}
                   className="h-full w-full object-cover object-center group-hover:opacity-75"
@@ -222,8 +206,6 @@ export default function Ecommerce() {
                           </h3>
 
                           <form>
-
-
                             <div className="mt-10">
                               <fieldset className="mt-4">
                                 <legend className="sr-only">Choose a size</legend>
@@ -389,12 +371,47 @@ export default function Ecommerce() {
                         </div>
                         <p className="mt-0.5 text-sm text-gray-500">Envío e impuestos calculados al finalizar la compra.</p>
                         <div className="mt-6">
-                          <a
-                            href="#"
-                            className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-                          >
-                            Continuar con el pago
-                          </a>
+                          {showPaymentForm ? (
+                            <div className="space-y-4">
+                              <input
+                                type="text"
+                                name="name"
+                                placeholder="Nombre"
+                                value={customer.name}
+                                onChange={handleInputChange}
+                                className="w-full p-2 border rounded"
+                              />
+                              <input
+                                type="email"
+                                name="email"
+                                placeholder="Email"
+                                value={customer.email}
+                                onChange={handleInputChange}
+                                className="w-full p-2 border rounded"
+                              />
+                              <input
+                                type="text"
+                                name="address"
+                                placeholder="Dirección"
+                                value={customer.address}
+                                onChange={handleInputChange}
+                                className="w-full p-2 border rounded"
+                              />
+                              <button
+                                onClick={handlePayment}
+                                className="w-full flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
+                              >
+                                Pagar ${nuevo_subtotal.toFixed(2)}
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => setShowPaymentForm(true)}
+                              className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700 w-full"
+                            >
+                              Continuar con el pago
+                            </button>
+                          )}
                         </div>
                         <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                           <p>
