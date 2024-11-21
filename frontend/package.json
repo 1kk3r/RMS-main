@@ -23,6 +23,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@types/react": "18.3.12",
     "eslint": "^8",
     "eslint-config-next": "14.2.7",
     "postcss": "^8",
