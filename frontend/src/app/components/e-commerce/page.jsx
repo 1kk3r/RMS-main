@@ -14,13 +14,13 @@ export default function EcommerceWithWebpay() {
   const [open, setOpen] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState({
-    id: 0, 
-    nombre: '', 
-    precio: 0, 
-    tipe: '', 
-    categoria: '', 
-    tamaño: {tallas: [],disponibilidad:false}, 
-    codigo: '', 
+    id: 0,
+    nombre: '',
+    precio: 0,
+    tipe: '',
+    categoria: '',
+    tamaño: { tallas: [], disponibilidad: false },
+    codigo: '',
     imagen: null
   })
   const [selectedSize, setSelectedSize] = useState(null)
@@ -66,7 +66,7 @@ export default function EcommerceWithWebpay() {
   const nuevo_subtotal = cart.reduce((total, item) => {
     if (isNaN(item.precio)) {
       console.error('Precio inválido:', item.precio);
-      return total;  
+      return total;
     }
     return total + item.precio * 1
   }, 0);
@@ -119,7 +119,7 @@ export default function EcommerceWithWebpay() {
               onClick={() => setCartOpen(true)}
               className="ml-4 p-2 text-gray-400 hover:text-gray-500"
             >
-              <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" /> 
+              <ShoppingCartIcon className="h-6 w-6" aria-hidden="true" />
               <span className="sr-only">Abrir carrito</span>
               {cart.length > 0 && (
                 <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">

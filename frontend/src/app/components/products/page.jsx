@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useMemo, act } from "react";
-import { Checkbox, Dialog, Disclosure, Transition } from "@headlessui/react";
+import React, { useState, useEffect } from "react";
+import { Dialog, Disclosure, Transition } from "@headlessui/react";
 import {
   XMarkIcon,
   MinusIcon,
@@ -7,11 +7,11 @@ import {
   Squares2X2Icon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
-import { CornerDownRightIcon } from "lucide-react";
 import { fetchProductos } from "@/app/comandos";
 import { supabase } from "@/app/comandos";
 import { subirProducto } from "@/app/comandos";
 import { v4 } from "uuid";
+
 const filters = [
   {
     id: "type",
@@ -108,9 +108,6 @@ export default function ProductPage() {
       code: product.codigo,
       image: product.imagen,
     });
-
-    //console.log("Producto seleccionado:", product);
-    //console.log(selectedProduct);
   };
 
   //Boton que cambia el classname segun la disponibilidad de la talla
@@ -163,8 +160,6 @@ export default function ProductPage() {
       const numericValue = value.replace(/[^0-9]/g, "");
       const numericfinal = parseFloat(numericValue);
       setNewProduct((prev) => ({ ...prev, [name]: numericfinal }));
-      //console.log("Precio:", numericfinal, typeof(numericfinal));
-      //console.log(newProduct, typeof(newProduct.price));
     } else if (name === "code" || name === "codigo") {
       let formattedValue = value.replace(/[^0-9]/g, "").slice(0, 8);
       if (formattedValue.length > 6) {
@@ -206,10 +201,8 @@ export default function ProductPage() {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     console.log(newProduct.image);
-    //    subirProducto(newProduct)
     setAddProductOpen(false);
     subirImagen(newProduct.image);
-    // setArrayProductos([...arrayProductos,newProduct])
     setNewProduct({
       id: 0,
       name: "",
@@ -270,7 +263,6 @@ export default function ProductPage() {
       code: selectedProduct.codigo,
       image: selectedProduct.imagen,
     });
-    //console.log(newProduct)
   };
 
   const handleUpdateProduct = async (e) => {
@@ -484,7 +476,7 @@ export default function ProductPage() {
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-            Deposito
+            Bodega
           </h1>
 
           <div className="flex items-center">
@@ -737,7 +729,7 @@ export default function ProductPage() {
                                 </legend>
                                 <div className="grid grid-cols-4 gap-4">
                                   {selectedProduct?.tamaño?.tallas?.length >
-                                  0 ? (
+                                    0 ? (
                                     selectedProduct.tamaño.tallas.map(
                                       (size, index) => (
                                         <label
@@ -1320,178 +1312,3 @@ export default function ProductPage() {
     </div>
   );
 }
-
-/* 420 filtros
-
-<form className="hidden lg:block">
-          <h3 className="sr-only">Categories</h3>
-          <ul role="list" className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900">
-            {filters.map((section) => (
-              <li key={section.name}>
-                <a href={section.href}>{section.name}</a>
-              </li>
-            ))}
-          </ul>
-
-          {filters.map((section) => (
-            <Disclosure as="div" key={section.id} className="border-b border-gray-200 py-6">
-              {({ open }) => (
-                <>
-                  <h3 className="-my-3 flow-root">
-                    <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                      <span className="font-medium text-gray-900">{section.name}</span>
-                      <span className="ml-6 flex items-center">
-                        {open ? (
-                          <MinusIcon className="h-5 w-5" aria-hidden="true" />
-                        ) : (
-                          <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                        )}
-                      </span>
-                    </Disclosure.Button>
-                  </h3>
-                  <Disclosure.Panel className="pt-6">
-                    <div className="space-y-4">
-                      {section.options.map((option, optionIdx) => (
-                        <div key={option.value} className="flex items-center">
-                          <input
-                            id={`filter-${section.id}-${optionIdx}`}
-                            name={`${section.id}[]`}
-                            defaultValue={option.value}
-                            type="checkbox"
-                            defaultChecked={option.checked}
-                            onChange={(e) => handleFilterChange(section.id, option.value, e.target.checked)}
-                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          />
-                          <label
-                            htmlFor={`filter-${section.id}-${optionIdx}`}
-                            className="ml-3 text-sm text-gray-600"
-                          >
-                            {option.label}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </Disclosure.Panel>
-                </>
-              )}
-            </Disclosure>
-          ))}
-        </form>
-
-                  <h3 className="sr-only">Categorias</h3>
-          <ul role="list" className="space-y-4 border-b border-gray-200 pb-6 text-sm font-medium text-gray-900">
-            {filters.map((section) => (
-              <li key={section.name}>
-                <a href={section.href}>{section.name}</a>
-              </li>
-            ))}
-          </ul>
-*/
-
-/*
-      ...Array.from({ length: 57 }, (_, i) => ({
-        value: (20 + i * 0.5).toFixed(1),
-        label: (20 + i * 0.5).toFixed(1),
-        checked: false
-      })),
-      
-      { value: 'adult', label: 'Adult', checked: false },
-      { value: '4', label: '4', checked: false },
-      { value: '5', label: '5', checked: false },
-*/
-
-/*    
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${selectedProduct.id}/`, {
-        method: 'DELETE',
-      });
-      if (!response.ok) {
-        throw new Error('Failed to delete product');
-      }
-      setProducts(prevProducts => prevProducts.filter(p => p.id !== selectedProduct.id));
-      setEditProductOpen(false);
-      setQuickViewOpen(false);
-    } catch (error) {
-      console.error('Error deleting product:', error);
-    } finally {
-      setIsSubmitting(false);
-      fetchProducts();
-    }
-  };
-*/
-
-/*
-  const fetchProducts = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-      const data = await response.json();
-      console.log("Respuesta completa:", data);
-      const productsArray = Array.isArray(data.results) ? data.results : [];
-      setProducts(productsArray);
-      console.log("Productos cargados:", productsArray);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setProducts([]);
-    }
-  };
-*/
-
-/* 
-  const filteredProducts = useMemo(() => {
-    if (!Array.isArray(products)) {
-      console.error('Products is not an array:', products);
-      return [];
-    }
-    return products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesFilters = Object.entries(activeFilters).every(([filterId, filterValues]) => {
-        if (Object.values(filterValues).some(v => v)) {
-          return Object.entries(filterValues).some(([value, isChecked]) =>
-            isChecked && (
-              (filterId === 'type' && product.type.toLowerCase() === value.toLowerCase()) ||
-              (filterId === 'category' && product.category.toLowerCase() === value.toLowerCase()) ||
-              (filterId === 'size' && product.sizes.some(size => size.toLowerCase() === value.toLowerCase()))
-            )
-          );
-        }
-        return true;
-      });
-      return matchesSearch && matchesFilters;
-    });
-  }, [products, searchQuery, activeFilters]);
-*/
-
-/*
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-    const formData = new FormData();
-    Object.keys(newProduct).forEach(key => {
-      if (key === 'sizes') {
-        formData.append(key, JSON.stringify(newProduct[key]));
-      } else {
-        formData.append(key, newProduct[key]);
-      }
-    });
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/`, {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) {
-        throw new Error('Failed to add product');
-      }
-      const addedProduct = await response.json();
-      setProducts(prevProducts => Array.isArray(prevProducts) ? [...prevProducts, addedProduct] : [addedProduct]);
-      handleAddProductClose();
-    } catch (error) {
-      console.error('Error adding product:', error);
-    } finally {
-      setIsSubmitting(false);
-      fetchProducts();
-    }
-*/

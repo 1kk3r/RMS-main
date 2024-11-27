@@ -1,7 +1,6 @@
 "use client";
 
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import {
   Bars3Icon,
@@ -11,15 +10,13 @@ import {
   BanknotesIcon,
   MapIcon,
 } from "@heroicons/react/24/outline";
-import { notFound, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Ecommerce from "./components/e-commerce/page";
 import TaskManager from "./components/task/page";
 import Product from "./components/products/page";
 import Map from "./components/map/page";
 import { v4 } from "uuid";
-import { supabase,seleccionar, registrar } from "./comandos";
-
-
+import { supabase } from "./comandos";
 
 const navigation = [
   {
@@ -38,7 +35,7 @@ const navigation = [
       </div>
     ),
     href: "/inventario",
-    title:"inventario"
+    title: "inventario"
   },
   {
     name: (
@@ -47,27 +44,19 @@ const navigation = [
       </div>
     ),
     href: "/e-commerce",
-    title:"e-commerce"
+    title: "e-commerce"
   },
   {
     name: (
       <div className="relative group">
         <MapIcon className="h-7 w-7 text-black-500 transition-transform duration-300 group-hover:scale-105" />
-        
+
       </div>
     ),
     href: "/mapa",
-    title:"mapa"
+    title: "mapa"
   },
 ];
-
-const users = [
-  { username: "iker.ca", password: "1111" },
-  { username: "user2", password: "password2" },
-];
-
-
-
 
 export default function Homepage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -79,8 +68,6 @@ export default function Homepage() {
   const router = useRouter();
   const [password_confirm, setpassword_confirm] = useState("");
   const [password_register, setpassword_register] = useState("");
-
-
 
   /*
   let timeout;
@@ -112,57 +99,41 @@ export default function Homepage() {
 */
   const handleLogin = (e) => {
     e.preventDefault();
-    ingresar(username,password)
+    ingresar(username, password)
 
   };
 
-  const registrar = async (username,password) =>{
-    const {user,error} = await supabase.auth.signUp({
+  const registrar = async (username, password) => {
+    const { user, error } = await supabase.auth.signUp({
       email: username,
       password: password,
     })
-    if (error){
+    if (error) {
       console.log("Error en el registro:", error);
-  
+
     }
-    else{
+    else {
       setError("Registro exitoso");
+    }
   }
-}
 
 
-  const ingresar = async (username,password) => {
-    const {data,error} = await supabase.auth.signInWithPassword({
+  const ingresar = async (username, password) => {
+    const { data, error } = await supabase.auth.signInWithPassword({
       email: username,
       password: password,
     })
-    if (error){
+    if (error) {
       console.log("Error en el ingreso:", error);
       setError("Nombre de usuario o contraseña incorrectas");
     }
-    else{
+    else {
       setError("Ingreso exitoso");
       localStorage.setItem("isLoggedIn", "true");
       setIsLoggedIn(true);
     }
 
   }
-
-
-  /*
-    const foundUser = users.find(
-      (user) => user.username === username && user.password === password
-    );
-
-    if (foundUser) {
-      localStorage.setItem("isLoggedIn", "true");
-      setIsLoggedIn(true);
-      setError("");
-    } else {
-      setError("Nombre de usuario o contraseña incorrectas");
-    }
-
-  */
 
   const handleNavigation = (href) => {
     if (href === "/e-commerce") {
@@ -189,19 +160,19 @@ export default function Homepage() {
 
   const [activa, setactiva] = useState("ingreso");
 
-  const botonIngreso = (estado,final) => {
+  const botonIngreso = (estado, final) => {
     if (estado === "ingreso" && final === "ingreso") {
       return "px-4 rounded-md py-2 bg-gray-300  border border-gray hover:border-gray-500 transition ";
     }
-    else{
+    else {
       return "px-4 rounded-md py-2  border border-gray hover:border-gray-500 transition ";
     }
   }
-  const botonRegistro = (estado,final) => {
-    if(estado === "registro" && final === "registro"){
+  const botonRegistro = (estado, final) => {
+    if (estado === "registro" && final === "registro") {
       return "px-4 rounded-md py-2 bg-gray-300  border border-gray hover:border-gray-500 transition ";
     }
-    else{
+    else {
       return "px-4 rounded-md py-2  border border-gray hover:border-gray-500 transition ";
     }
   }
@@ -213,12 +184,12 @@ export default function Homepage() {
       password_register !== " " &&
       password_confirm !== " " &&
       password_register === password_confirm &&
-      !users.some((user) => user.username === username ) && password_register.length >= 6
+      !users.some((user) => user.username === username) && password_register.length >= 6
     ) {
-      registrar(username,password_register)
-      
+      registrar(username, password_register)
+
       //console.log(users);
-      registrar(username,password_register)
+      registrar(username, password_register)
 
       //setactiva('ingreso')
     } else {
@@ -235,27 +206,27 @@ export default function Homepage() {
             <div className="flex flex-col items-center">
               <div className="flex justify-center space-x-4 ">
                 <button
-                  className={botonIngreso(activa,"ingreso")}
+                  className={botonIngreso(activa, "ingreso")}
                   onClick={() => [setactiva("ingreso")]}
                 >
-                  ingresar
+                  Ingresar
                 </button>
                 <button
-                  className={botonRegistro(activa,"registro")}
-                  onClick={() => [ setactiva("registro")]}
+                  className={botonRegistro(activa, "registro")}
+                  onClick={() => [setactiva("registro")]}
                 >
-                  registrarse
+                  Registrarse
                 </button>
               </div>
 
               <img
                 alt="Logo provisional"
                 title='Logo Provisional'
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBEdGyhY43kLvgJXnkmLJZWAwh_un3-EkKiw&s"
-                className="h-12 w-auto mt-5"
+                src="https://2.bp.blogspot.com/-loZpfw4DAM4/UvRAVKrYmvI/AAAAAAAACeE/9zuGlMEbFr8/s1600/Puma.png"
+                className="h-20 w-auto mt-8"
               />
               <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-                BIENVENIDO
+                FOREVER FASTER!
               </h2>
             </div>
 
@@ -387,7 +358,7 @@ export default function Homepage() {
                   <span className="sr-only">Your Company</span>
                   <img
                     alt="Logo"
-                    src="https://www.pngplay.com/wp-content/uploads/7/Home-Logo-Background-PNG-Image.png"
+                    src="https://2.bp.blogspot.com/-loZpfw4DAM4/UvRAVKrYmvI/AAAAAAAACeE/9zuGlMEbFr8/s1600/Puma.png"
                     className="h-8 w-auto"
                     onClick={() => setCurrentPage("home")}
                   />
@@ -413,7 +384,7 @@ export default function Homepage() {
                     title={item.title}
                   >
                     {item.name}
-              
+
                   </button>
                 ))}
               </div>
@@ -440,7 +411,7 @@ export default function Homepage() {
                     <span className="sr-only">Your Company</span>
                     <img
                       alt="Logo"
-                      src="https://static-00.iconduck.com/assets.00/brand-puma-icon-2048x1595-7h1m6t2y.png"
+                      src="https://2.bp.blogspot.com/-loZpfw4DAM4/UvRAVKrYmvI/AAAAAAAACeE/9zuGlMEbFr8/s1600/Puma.png"
                       className="h-8 w-auto"
                       onClick={() => setCurrentPage("home")}
                     />
@@ -468,18 +439,18 @@ export default function Homepage() {
                           {item.name}
                         </button>
                       ))}
-                       <button
-                  title="logout"
-                  onClick={handleLogout}
-                  className="text-sm font-semibold leading-6 text-gray-900"
-                >
-                  Cerrar sesión <span aria-hidden="true">&rarr;</span>
-                </button>
+                      <button
+                        title="logout"
+                        onClick={handleLogout}
+                        className="text-sm font-semibold leading-6 text-gray-900"
+                      >
+                        Cerrar sesión <span aria-hidden="true">&rarr;</span>
+                      </button>
                     </div>
                   </div>
                 </div>
                 <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-               
+
                 </div>
               </Dialog.Panel>
             </Dialog>
@@ -495,7 +466,7 @@ export default function Homepage() {
               currentPage !== "inventario" &&
               currentPage !== "mapa" && (
                 <div className="text-center">
-        
+
                   <p className="mt-6 text-lg leading-8 text-gray-600">
                     Selecciona un modal del menú de navegación para comenzar.
                   </p>
@@ -597,10 +568,6 @@ export default function Homepage() {
                                   </div>
                                 </div>
                               </div>
-   
-
-
-   
                             </div>
                           </div>
                         </div>
@@ -616,12 +583,3 @@ export default function Homepage() {
     </div>
   );
 }
-
-
-
-/*
-
-                              <div className="px-6 pb-14 pt-6">
-                                {<Ecommerce />}
-                              </div>
-                              */
