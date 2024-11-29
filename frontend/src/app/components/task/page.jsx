@@ -173,8 +173,11 @@ export default function TareasReposicion() {
   const esTareaAntigua = (fecha) => {
     const fechaTarea = new Date(fecha);
     const hoy = new Date();
-    return fechaTarea.setHours(0,0,0,0) < hoy.setHours(0,0,0,0);
-  };
+    const fechaTareaSinHora = new Date(fechaTarea.setHours(0, 0, 0, 0));
+    const hoySinHora = new Date(hoy.setHours(0, 0, 0, 0));
+
+    return fechaTareaSinHora < hoySinHora;
+  };  
 
   return (
     <div className="container mx-auto p-4">
@@ -196,7 +199,7 @@ export default function TareasReposicion() {
 
       {/* Lista de tareas creadas */}
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">Tareas Creadas</h2>
+        <h2 className="text-xl font-semibold mb-4">Tareas en Espera</h2>
         <div className="space-y-4">
           {tareas.map((tarea) => (
             <div
@@ -216,7 +219,17 @@ export default function TareasReposicion() {
               <p className="text-sm text-gray-600">
                 Productos: {tarea.productos?.length || 0}
               </p>
-              {!esTareaAntigua(tarea.fecha) && (
+              <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setTareaActual(tarea);
+                      eliminarTarea();
+                    }}
+                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm"
+                  >
+                    Eliminar Tarea
+                  </button>
+              {esTareaAntigua(tarea.fecha) && (
                 <div className="mt-2 flex justify-end space-x-2">
                   <button
                     onClick={(e) => {
@@ -227,16 +240,6 @@ export default function TareasReposicion() {
                     className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded text-sm"
                   >
                     Agregar Producto
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setTareaActual(tarea);
-                      eliminarTarea();
-                    }}
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm"
-                  >
-                    Eliminar Tarea
                   </button>
                 </div>
               )}

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, Disclosure, Transition } from "@headlessui/react";
+import { Dialog, Transition } from "@headlessui/react";
 import {
   XMarkIcon,
-  MinusIcon,
-  PlusIcon,
   Squares2X2Icon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
@@ -12,66 +10,26 @@ import { supabase } from "@/app/comandos";
 import { subirProducto } from "@/app/comandos";
 import { v4 } from "uuid";
 
-const filters = [
-  {
-    id: "type",
-    name: "Tipo",
-    options: [
-      { value: "accessories", label: "Accesorios", checked: false },
-      { value: "apparel", label: "Apparel", checked: false },
-      { value: "footwear", label: "Footwear", checked: false },
-    ],
-  },
-  {
-    id: "category",
-    name: "Categoria",
-    options: [
-      { value: "Ropa", label: "Ropa", checked: false },
-      { value: "sportstyle", label: "Sportstyle", checked: false },
-      { value: "running-training", label: "Running/Training", checked: false },
-      { value: "teamsport", label: "Teamsport", checked: false },
-      { value: "motorsport", label: "Motorsport", checked: false },
-    ],
-  },
-  {
-    id: "size",
-    name: "Tamaño",
-    options: [
-      { value: "xxs", label: "XXS", checked: false },
-      { value: "xs", label: "XS", checked: false },
-      { value: "s", label: "S", checked: false },
-      { value: "m", label: "M", checked: false },
-      { value: "l", label: "L", checked: false },
-      { value: "xl", label: "XL", checked: false },
-      { value: "xxl", label: "XXL", checked: false },
-    ],
-  },
-];
-
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function ProductPage() {
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [products, setProducts] = useState([]);
-  const [selectedProduct, setSelectedProduct] = useState([
-    {
-      id: 0,
-      nombre: "",
-      precio: 0,
-      tipe: "",
-      categoria: "",
-      tamaño: { tallas: [], disponibilidad: false },
-      codigo: "",
-      imagen: null,
-    },
-  ]);
+  const [selectedProduct, setSelectedProduct] = useState({
+    id: 0,
+    nombre: "",
+    precio: 0,
+    tipe: "",
+    categoria: "",
+    tamaño: { tallas: [], disponibilidad: false },
+    codigo: "",
+    imagen: null,
+  });
   const [quickViewOpen, setQuickViewOpen] = useState(false);
   const [addProductOpen, setAddProductOpen] = useState(false);
   const [editProductOpen, setEditProductOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilters, setActiveFilters] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newProduct, setNewProduct] = useState({
     id: 0,
@@ -110,24 +68,16 @@ export default function ProductPage() {
     });
   };
 
-  //Boton que cambia el classname segun la disponibilidad de la talla
   const botonEstado = (estado) => {
-    //Talla disponible
-    if (estado) {
-      return " group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-gray-500 transition focus:outline-none sm:flex-1";
-    }
-    //Talla no disponible
-    else {
-      return " group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-red-500 transition focus:outline-none sm:flex-1";
-    }
+    return estado
+      ? " group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-gray-500 transition focus:outline-none sm:flex-1"
+      : " group relative flex items-center justify-center rounded-md border py-3 px-4 text-sm font-medium uppercase hover:bg-red-500 transition focus:outline-none sm:flex-1";
   };
 
-  //Abir modal de añadir producto
   const handleAddProductOpen = () => {
     setAddProductOpen(true);
   };
 
-  //Cerrar modal de añadir producto
   const handleAddProductClose = () => {
     setAddProductOpen(false);
     setNewProduct({
@@ -142,13 +92,11 @@ export default function ProductPage() {
     });
   };
 
-  //LLevar a cabo los cambios en las variables del nuevo producto
   const handleNewProductChange = (e) => {
     const { name, value, files, options } = e.target;
-    //name es el nombre del input que se esta cambiando
     if (name === "image" || name === "imagen") {
       setNewProduct((prev) => ({ ...prev, [name]: files[0] }));
-    } else if (name == "disponibilidad") {
+    } else if (name === "disponibilidad") {
       setNewProduct((prev) => ({
         ...prev,
         sizes: {
@@ -244,24 +192,24 @@ export default function ProductPage() {
       .eq("id", id)
       .select();
     console.log("Producto eliminado:", id);
-    arrayProductos.filter((p) => p.id !== id);
+    setArrayProductos(arrayProductos.filter((p) => p.id !== id));
   };
 
   const handleEditProduct = (product) => {
     setSelectedProduct(product);
     setEditProductOpen(true);
     setNewProduct({
-      id: selectedProduct.id,
-      name: selectedProduct.nombre,
-      price: selectedProduct.precio,
-      type: selectedProduct.tipe,
-      category: selectedProduct.categoria,
+      id: product.id,
+      name: product.nombre,
+      price: product.precio,
+      type: product.tipe,
+      category: product.categoria,
       sizes: {
-        tallas: selectedProduct.tamaño.talla,
-        disponibilidad: selectedProduct.tamaño.disponibilidad,
+        tallas: product.tamaño.tallas,
+        disponibilidad: product.tamaño.disponibilidad,
       },
-      code: selectedProduct.codigo,
-      image: selectedProduct.imagen,
+      code: product.codigo,
+      image: product.imagen,
     });
   };
 
@@ -280,7 +228,6 @@ export default function ProductPage() {
         formData.append(key, newProduct[key]);
       }
     });
-
 
     try {
       const response = await fetch(
@@ -347,149 +294,17 @@ export default function ProductPage() {
     setQuickViewOpen(false);
   };
 
-  const handleFilterChange = (filterId, optionValue, isChecked) => {
-    setActiveFilters((prev) => ({
-      ...prev,
-      [filterId]: {
-        ...prev[filterId],
-        [optionValue]: isChecked,
-      },
-    }));
-  };
+  const filteredProducts = arrayProductos.filter((product) =>
+    product.nombre.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="bg-white">
-      <Transition.Root show={mobileFiltersOpen} as={React.Fragment}>
-        <Dialog
-          as="div"
-          className="relative z-40 lg:hidden"
-          onClose={setMobileFiltersOpen}
-        >
-          <Transition.Child
-            as={React.Fragment}
-            enter="transition-opacity ease-linear duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transition-opacity ease-linear duration-300"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="fixed inset-0 bg-black bg-opacity-25" />
-          </Transition.Child>
-
-          <div className="fixed inset-0 z-40 flex">
-            <Transition.Child
-              as={React.Fragment}
-              enter="transition ease-in-out duration-300 transform"
-              enterFrom="translate-x-full"
-              enterTo="translate-x-0"
-              leave="transition ease-in-out duration-300 transform"
-              leaveFrom="translate-x-0"
-              leaveTo="translate-x-full"
-            >
-              <Dialog.Panel className="relative ml-auto flex h-full w-full max-w-xs flex-col overflow-y-auto bg-white py-4 pb-12 shadow-xl">
-                <div className="flex items-center justify-between px-4">
-                  <h2 className="text-lg font-medium text-gray-900">Filters</h2>
-                  <button
-                    title="close-menu"
-                    type="button"
-                    className="-mr-2 flex h-10 w-10 items-center justify-center rounded-md bg-white p-2 text-gray-400"
-                    onClick={() => setMobileFiltersOpen(false)}
-                  >
-                    <span className="sr-only">Close menu</span>
-                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </div>
-
-                <form className="mt-4 border-t border-gray-200">
-                  {filters.map((section) => (
-                    <Disclosure
-                      as="div"
-                      key={section.id}
-                      className="border-t border-gray-200 px-4 py-6"
-                    >
-                      {({ open }) => (
-                        <>
-                          <h3 className="-mx-2 -my-3 flow-root">
-                            <Disclosure.Button className="flex w-full items-center justify-between bg-white px-2 py-3 text-gray-400 hover:text-gray-500">
-                              <span className="font-medium text-gray-900">
-                                {section.name}
-                              </span>
-                              <span className="ml-6 flex items-center">
-                                {open ? (
-                                  <MinusIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                ) : (
-                                  <PlusIcon
-                                    className="h-5 w-5"
-                                    aria-hidden="true"
-                                  />
-                                )}
-                              </span>
-                            </Disclosure.Button>
-                          </h3>
-                          <Disclosure.Panel className="pt-6">
-                            <div className="space-y-6">
-                              {section.options.map((option, optionIdx) => (
-                                <div
-                                  key={option.value}
-                                  className="flex items-center"
-                                >
-                                  <input
-                                    id={`filter-mobile-${section.id}-${optionIdx}`}
-                                    name={`${section.id}[]`}
-                                    defaultValue={option.value}
-                                    type="checkbox"
-                                    defaultChecked={option.checked}
-                                    onChange={(e) =>
-                                      handleFilterChange(
-                                        section.id,
-                                        option.value,
-                                        e.target.checked
-                                      )
-                                    }
-                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                  />
-                                  <label
-                                    htmlFor={`filter-mobile-${section.id}-${optionIdx}`}
-                                    className="ml-3 min-w-0 flex-1 text-gray-500"
-                                  >
-                                    {option.label}
-                                  </label>
-                                </div>
-                              ))}
-                            </div>
-                          </Disclosure.Panel>
-                        </>
-                      )}
-                    </Disclosure>
-                  ))}
-                </form>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </Dialog>
-      </Transition.Root>
-
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
           <h1 className="text-4xl font-bold tracking-tight text-gray-900">
             Bodega
           </h1>
-
-          <div className="flex items-center">
-            <button
-              title="filters"
-              type="button"
-              className="-m-2 ml-4  p-2 text-gray-400 hover:text-gray-500 sm:ml-6 lg:hidden"
-              onClick={() => setMobileFiltersOpen(true)}
-            >
-              <span className="sr-only">Filters</span>
-              <Squares2X2Icon className="h-5 w-5" aria-hidden="true" />
-            </button>
-          </div>
         </div>
 
         <section aria-labelledby="products-heading" className="pb-24 pt-6">
@@ -497,74 +312,8 @@ export default function ProductPage() {
             Products
           </h2>
 
-          <form className="hidden lg:block">
-            {filters.map((section) => (
-              <Disclosure
-                as="div"
-                key={section.id}
-                className="border-b border-gray-200 py-6"
-              >
-                {({ open }) => (
-                  <>
-                    <h3 className="-my-3 flow-root">
-                      <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                        <span className="font-medium text-gray-900">
-                          {section.name}
-                        </span>
-                        <span className="ml-6 flex items-center">
-                          {open ? (
-                            <MinusIcon className="h-5 w-5" aria-hidden="true" />
-                          ) : (
-                            <PlusIcon className="h-5 w-5" aria-hidden="true" />
-                          )}
-                        </span>
-                      </Disclosure.Button>
-                    </h3>
-                    <Disclosure.Panel className="pt-6">
-                      <div className="space-y-4">
-                        {section.options.map((option, optionIdx) => (
-                          <div key={option.value} className="flex items-center">
-                            <input
-                              id={`filter-${section.id}-${optionIdx}`}
-                              name={`${section.id}[]`}
-                              defaultValue={option.value}
-                              type="checkbox"
-                              defaultChecked={option.checked}
-                              onClick={(e) =>
-                                console.log(
-                                  "opcion marcada = ",
-                                  section.id,
-                                  option.value,
-                                  e.target.checked
-                                )
-                              }
-                              onChange={(e) =>
-                                handleFilterChange(
-                                  section.id,
-                                  option.value,
-                                  e.target.checked
-                                )
-                              }
-                              className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                            />
-                            <label
-                              htmlFor={`filter-${section.id}-${optionIdx}`}
-                              className="ml-3 text-sm text-gray-600"
-                            >
-                              {option.label}
-                            </label>
-                          </div>
-                        ))}
-                      </div>
-                    </Disclosure.Panel>
-                  </>
-                )}
-              </Disclosure>
-            ))}
-          </form>
-
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-            <div className="lg:col-span-3">
+            <div className="lg:col-span-4">
               <div className="mb-4">
                 <div className="relative">
                   <input
@@ -582,7 +331,7 @@ export default function ProductPage() {
                   <h2 className="">Productos</h2>
 
                   <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-                    {arrayProductos.map((product) => (
+                    {filteredProducts.map((product) => (
                       <div key={product.id} className="group relative">
                         <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
                           <img
@@ -651,7 +400,6 @@ export default function ProductPage() {
                 <Dialog.Panel className="flex w-full transform text-left text-base transition md:my-8 md:max-w-2xl md:px-4 lg:max-w-4xl">
                   <div className="relative flex w-full items-center overflow-hidden bg-white px-4 pb-8 pt-14 shadow-2xl sm:px-6 sm:pt-8 md:p-6 lg:p-8">
                     <button
-                      title="close-quickview"
                       type="button"
                       className="absolute right-4 top-4 text-gray-400 hover:text-gray-500 sm:right-6 sm:top-8 md:right-6 md:top-6 lg:right-8 lg:top-8"
                       onClick={() => setQuickViewOpen(false)}
@@ -663,54 +411,48 @@ export default function ProductPage() {
                     <div className="grid w-full grid-cols-1 items-start gap-x-6 gap-y-8 sm:grid-cols-12 lg:gap-x-8">
                       <div className="aspect-h-3 aspect-w-2 overflow-hidden rounded-lg bg-gray-100 sm:col-span-4 lg:col-span-5">
                         <img
-                          src={selectedProduct?.imagen}
-                          alt={`Imagen de ${selectedProduct?.nombre}`}
+                          src={selectedProduct.imagen}
+                          alt={`Imagen de ${selectedProduct.nombre}`}
                           className="object-cover object-center"
                         />
                       </div>
                       <div className="sm:col-span-8 lg:col-span-7">
                         <h2 className="text-2xl font-bold text-gray-900 sm:pr-12">
-                          {selectedProduct?.nombre}
+                          {selectedProduct.nombre}
                         </h2>
 
-                        <section
-                          aria-labelledby="information-heading"
-                          className="mt-2"
-                        >
+                        <section aria-labelledby="information-heading" className="mt-2">
                           <h3 id="information-heading" className="sr-only">
-                            Infromación del producto
+                            Información del producto
                           </h3>
 
                           <p className="text-2xl text-gray-900">
-                            ${selectedProduct?.precio}
+                            ${selectedProduct.precio}
                           </p>
 
                           <div className="mt-6">
-                            <h4 className="sr-only">Type</h4>
+                            <h4 className="sr-only">Tipo</h4>
                             <p className="text-sm text-gray-700">
-                              Tipo: {selectedProduct?.tipe}
+                              Tipo: {selectedProduct.tipe}
                             </p>
                           </div>
 
                           <div className="mt-6">
-                            <h4 className="sr-only">Categoria</h4>
+                            <h4 className="sr-only">Categoría</h4>
                             <p className="text-sm text-gray-700">
-                              Categoria: {selectedProduct?.categoria}
+                              Categoría: {selectedProduct.categoria}
                             </p>
                           </div>
 
                           <div className="mt-6">
-                            <h4 className="sr-only">Code</h4>
+                            <h4 className="sr-only">Código</h4>
                             <p className="text-sm text-gray-700">
-                              Codigo: {selectedProduct?.codigo}
+                              Código: {selectedProduct.codigo}
                             </p>
                           </div>
                         </section>
 
-                        <section
-                          aria-labelledby="options-heading"
-                          className="mt-10"
-                        >
+                        <section aria-labelledby="options-heading" className="mt-10">
                           <h3 id="options-heading" className="sr-only">
                             Opciones del producto
                           </h3>
@@ -719,49 +461,40 @@ export default function ProductPage() {
                             <div className="mt-10">
                               <div className="flex items-center justify-between">
                                 <h4 className="text-sm font-medium text-gray-900">
-                                  tamaño
+                                  Tamaño
                                 </h4>
                               </div>
 
                               <fieldset className="mt-4">
                                 <legend className="sr-only">
-                                  Choose a size
+                                  Elige un tamaño
                                 </legend>
                                 <div className="grid grid-cols-4 gap-4">
-                                  {selectedProduct?.tamaño?.tallas?.length >
-                                    0 ? (
-                                    selectedProduct.tamaño.tallas.map(
-                                      (size, index) => (
-                                        <label
-                                          key={index}
-                                          className={botonEstado(
-                                            size.disponibilidad
-                                          )}
-                                        >
-                                          <input
-                                            type="radio"
-                                            name="size-choice"
-                                            value={size.talla}
-                                            className="sr-only "
-                                            aria-labelledby={`size-choice-${size}-label`}
-                                            onClick={() => {
-                                              if (size.disponibilidad) {
-                                                console.log(size.talla);
-                                              } else {
-                                                console.log(
-                                                  "Talla no disponible"
-                                                );
-                                              }
-                                            }}
-                                          />
-                                          <span
-                                            id={`size-choice-${size}-label`}
-                                          >
-                                            {size.talla}
-                                          </span>
-                                        </label>
-                                      )
-                                    )
+                                  {selectedProduct.tamaño?.tallas?.length > 0 ? (
+                                    selectedProduct.tamaño.tallas.map((size, index) => (
+                                      <label
+                                        key={index}
+                                        className={botonEstado(size.disponibilidad)}
+                                      >
+                                        <input
+                                          type="radio"
+                                          name="size-choice"
+                                          value={size.talla}
+                                          className="sr-only"
+                                          aria-labelledby={`size-choice-${size.talla}-label`}
+                                          onClick={() => {
+                                            if (size.disponibilidad) {
+                                              console.log(size.talla);
+                                            } else {
+                                              console.log("Talla no disponible");
+                                            }
+                                          }}
+                                        />
+                                        <span id={`size-choice-${size.talla}-label`}>
+                                          {size.talla}
+                                        </span>
+                                      </label>
+                                    ))
                                   ) : (
                                     <p>No hay tallas disponibles</p>
                                   )}
@@ -770,7 +503,6 @@ export default function ProductPage() {
                             </div>
 
                             <button
-                              title="edit-product"
                               type="button"
                               onClick={() => handleEditProduct(selectedProduct)}
                               className="mt-6 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -791,7 +523,6 @@ export default function ProductPage() {
 
       <div className="fixed bottom-4 right-4">
         <button
-          title="add-product"
           onClick={handleAddProductOpen}
           className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
         >
@@ -885,10 +616,10 @@ export default function ProductPage() {
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                <option value="">Select a type</option>
-                                <option value="accessories">Accessories</option>
-                                <option value="apparel">Apparel</option>
-                                <option value="footwear">Footwear</option>
+                                <option value="">Selecciona un tipo</option>
+                                <option value="accessories">Accesorios</option>
+                                <option value="apparel">Ropa</option>
+                                <option value="footwear">Calzado</option>
                               </select>
                             </div>
                           </div>
@@ -898,7 +629,7 @@ export default function ProductPage() {
                               htmlFor="category"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Categoria
+                              Categoría
                             </label>
                             <div className="mt-1">
                               <select
@@ -908,11 +639,9 @@ export default function ProductPage() {
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                <option value="">Select a category</option>
+                                <option value="">Selecciona una categoría</option>
                                 <option value="sportstyle">Sportstyle</option>
-                                <option value="running-training">
-                                  Running/Training
-                                </option>
+                                <option value="running-training">Running/Training</option>
                                 <option value="teamsport">Teamsport</option>
                                 <option value="motorsport">Motorsport</option>
                               </select>
@@ -934,9 +663,7 @@ export default function ProductPage() {
                               onChange={handleNewProductChange}
                               className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                             >
-                              <option value="">
-                                selecciona disponibilidad
-                              </option>
+                              <option value="">Selecciona disponibilidad</option>
                               <option value="true">Disponible</option>
                               <option value="false">No disponible</option>
                             </select>
@@ -958,17 +685,11 @@ export default function ProductPage() {
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                {filters
-                                  .find((f) => f.id === "size")
-                                  .options.map((option) => (
-                                    <option
-                                      type="checkbox"
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </option>
-                                  ))}
+                                {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                                  <option key={size} value={size}>
+                                    {size}
+                                  </option>
+                                ))}
                               </select>
                             </div>
                           </div>
@@ -978,7 +699,7 @@ export default function ProductPage() {
                               htmlFor="code"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Codigo del producto
+                              Código del producto
                             </label>
                             <div className="mt-1">
                               <input
@@ -1013,22 +734,17 @@ export default function ProductPage() {
                         </div>
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                           <button
-                            title="submit"
                             type="submit"
                             className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                            onClick={() => {
-                              console.log;
-                            }}
                           >
-                            {isSubmitting ? "Adding..." : "Add Product"}
+                            {isSubmitting ? "Añadiendo..." : "Añadir Producto"}
                           </button>
                           <button
-                            title="cancel"
                             type="button"
                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                             onClick={handleAddProductClose}
                           >
-                            Cancel
+                            Cancelar
                           </button>
                         </div>
                       </form>
@@ -1078,6 +794,7 @@ export default function ProductPage() {
                       <form
                         onSubmit={(e) => {
                           e.preventDefault();
+                          actualizarProducto(newProduct);
                         }}
                         className="mt-2"
                       >
@@ -1106,7 +823,7 @@ export default function ProductPage() {
                               htmlFor="price-quickview"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              precio
+                              Precio
                             </label>
                             <div className="mt-1 relative rounded-md shadow-sm">
                               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -1131,30 +848,30 @@ export default function ProductPage() {
                               htmlFor="type-quickview"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              tipo
+                              Tipo
                             </label>
                             <div className="mt-1">
                               <select
-                                id="type"
-                                name="type-quickview"
+                                id="type-quickview"
+                                name="type"
                                 value={newProduct.type}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                <option value="">Select a type</option>
-                                <option value="accessories">Accessories</option>
-                                <option value="apparel">Apparel</option>
-                                <option value="footwear">Footwear</option>
+                                <option value="">Selecciona un tipo</option>
+                                <option value="accessories">Accesorios</option>
+                                <option value="apparel">Ropa</option>
+                                <option value="footwear">Calzado</option>
                               </select>
                             </div>
                           </div>
 
                           <div className="sm:col-span-3">
                             <label
-                              htmlFor="category"
+                              htmlFor="category-quickview"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              categoria
+                              Categoría
                             </label>
                             <div className="mt-1">
                               <select
@@ -1164,11 +881,9 @@ export default function ProductPage() {
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                <option value="">Select a category</option>
+                                <option value="">Selecciona una categoría</option>
                                 <option value="sportstyle">Sportstyle</option>
-                                <option value="running-training">
-                                  Running/Training
-                                </option>
+                                <option value="running-training">Running/Training</option>
                                 <option value="teamsport">Teamsport</option>
                                 <option value="motorsport">Motorsport</option>
                               </select>
@@ -1180,36 +895,31 @@ export default function ProductPage() {
                               htmlFor="sizes-quickview"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              tamaños
+                              Tamaños
                             </label>
                             <div className="mt-1">
                               <select
                                 id="sizes-quickview"
                                 name="sizes"
                                 multiple
-                                value={newProduct.sizes.tallas}
+                                value={newProduct.sizes.tallas.map(t => t.talla)}
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                {filters
-                                  .find((f) => f.id === "size")
-                                  .options.map((option) => (
-                                    <option
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label}
-                                    </option>
-                                  ))}
+                                {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                                  <option key={size} value={size}>
+                                    {size}
+                                  </option>
+                                ))}
                               </select>
                             </div>
                           </div>
                           <div className="sm:col-span-3">
                             <label
-                              htmlFor="disponibilidad"
+                              htmlFor="disponibilidad-quickview"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              disponibilidad
+                              Disponibilidad
                             </label>
                             <div className="mt-1">
                               <select
@@ -1219,7 +929,7 @@ export default function ProductPage() {
                                 onChange={handleNewProductChange}
                                 className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                               >
-                                <option value="">Select a size</option>
+                                <option value="">Selecciona disponibilidad</option>
                                 <option value="true">Disponible</option>
                                 <option value="false">No disponible</option>
                               </select>
@@ -1231,7 +941,7 @@ export default function ProductPage() {
                               htmlFor="code-quickview"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              Codigo de producto
+                              Código de producto
                             </label>
                             <div className="mt-1">
                               <input
@@ -1250,7 +960,7 @@ export default function ProductPage() {
                               htmlFor="image-quickview"
                               className="block text-sm font-medium text-gray-700"
                             >
-                              imagen de producto
+                              Imagen de producto
                             </label>
                             <div className="mt-1">
                               <input
@@ -1266,39 +976,30 @@ export default function ProductPage() {
                         </div>
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                           <button
-                            title="update-product"
                             type="submit"
                             className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2"
-                            onClick={(e) => [
-                              (newProduct.id = selectedProduct.id),
-                              actualizarProducto(newProduct),
-                            ]}
                           >
-                            {isSubmitting ? "Updating..." : "Update Product"}
+                            {isSubmitting ? "Actualizando..." : "Actualizar Producto"}
                           </button>
                           <button
-                            title="cancel-edit-product"
                             type="button"
                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
                             onClick={() => {
                               setEditProductOpen(false);
                             }}
                           >
-                            Cancel
+                            Cancelar
                           </button>
                         </div>
                       </form>
                       <div className="mt-5">
                         <button
-                          title="delete"
                           type="button"
                           className="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-                          onClick={(e) => {
-                            handleDeleteProduct(selectedProduct);
-                          }}
+                          onClick={() => handleDeleteProduct(selectedProduct)}
                           disabled={isSubmitting}
                         >
-                          {isSubmitting ? "Deleting..." : "Borrar producto"}
+                          {isSubmitting ? "Borrando..." : "Borrar producto"}
                         </button>
                       </div>
                     </div>
@@ -1312,3 +1013,4 @@ export default function ProductPage() {
     </div>
   );
 }
+
