@@ -5,6 +5,7 @@ import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon, ShoppingCartIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { v4 } from "uuid";
 import { fetchProductos, supabase } from '@/app/comandos';
+import CheckoutForm from '../payment/page';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -71,27 +72,8 @@ export default function EcommerceWithWebpay() {
     return total + item.precio * 1
   }, 0);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCustomer({ ...customer, [name]: value });
-  };
-
   const handlePayment = async () => {
-    try {
-      const response = await fetch('/api/process-payment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ customer, amount: nuevo_subtotal }),
-      });
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Error processing payment:', error);
-    }
+    CheckoutForm();
   };
 
   return (
@@ -367,41 +349,17 @@ export default function EcommerceWithWebpay() {
                       <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
                         <div className="flex justify-between text-base font-medium text-gray-900">
                           <p>Subtotal</p>
-                          <p>${nuevo_subtotal.toFixed(2)}</p>
+                          <p>${nuevo_subtotal.toFixed()}</p>
                         </div>
                         <p className="mt-0.5 text-sm text-gray-500">Envío e impuestos calculados al finalizar la compra.</p>
                         <div className="mt-6">
                           {showPaymentForm ? (
                             <div className="space-y-4">
-                              <input
-                                type="text"
-                                name="name"
-                                placeholder="Nombre"
-                                value={customer.name}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                              />
-                              <input
-                                type="email"
-                                name="email"
-                                placeholder="Email"
-                                value={customer.email}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                              />
-                              <input
-                                type="text"
-                                name="address"
-                                placeholder="Dirección"
-                                value={customer.address}
-                                onChange={handleInputChange}
-                                className="w-full p-2 border rounded"
-                              />
                               <button
                                 onClick={handlePayment}
                                 className="w-full flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                               >
-                                Pagar ${nuevo_subtotal.toFixed(2)}
+                                Pagar ${nuevo_subtotal.toFixed()}
                               </button>
                             </div>
                           ) : (
