@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { supabase } from "@/app/comandos";
+import React, { useState, useEffect, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import { Plus, Minus, Trash2 } from 'lucide-react';
+import { supabase } from "@/app/comandos";
+import { Plus, Minus, Trash2, CircleX, CircleFadingPlus } from 'lucide-react';
 
 export default function TareasReposicion() {
   const [tareas, setTareas] = useState([]);
@@ -15,6 +14,7 @@ export default function TareasReposicion() {
   const [cantidadProducto, setCantidadProducto] = useState(1);
   const [mostrarBusquedaProducto, setMostrarBusquedaProducto] = useState(false);
   const [productoEncontrado, setProductoEncontrado] = useState(null);
+  const [mostrarProductosTarea, setMostrarProductosTarea] = useState(false);
 
   useEffect(() => {
     cargarTareas();
@@ -33,8 +33,12 @@ export default function TareasReposicion() {
   };
 
   const crearTarea = async () => {
+    if (!titulo.trim()) {
+      alert("El título es obligatorio.");
+      return;
+    }
     const nuevaTarea = {
-      titulo: titulo,
+      titulo: titulo.trim(),
       fecha: new Date().toISOString(),
       productos: []
     };
@@ -59,7 +63,6 @@ export default function TareasReposicion() {
       .eq('codigo', codigoProducto)
       .single();
     if (error) {
-      console.error('Error al buscar producto:', error);
       alert('Producto no encontrado');
     } else {
       setProductoEncontrado(data);
@@ -76,7 +79,7 @@ export default function TareasReposicion() {
 
     const tareaActualizada = {
       ...tareaActual,
-      productos: Array.isArray(tareaActual.productos) 
+      productos: Array.isArray(tareaActual.productos)
         ? [...tareaActual.productos, nuevoProducto]
         : [nuevoProducto]
     };
@@ -113,26 +116,12 @@ export default function TareasReposicion() {
     }
   };
 
-  const editarTarea = async () => {
-    const { data, error } = await supabase
-      .from('tareas_reposicion')
-      .update(tareaActual)
-      .eq('id', tareaActual.id)
-      .select();
-    if (error) {
-      console.error('Error al editar tarea:', error);
-    } else {
-      setTareas(tareas.map(t => t.id === data[0].id ? data[0] : t));
-      setMostrarDetalleTarea(false);
-    }
-  };
-
   const actualizarCantidadProducto = async (productoId, incremento) => {
     const productoIndex = tareaActual.productos.findIndex(p => p.id === productoId);
     if (productoIndex === -1) return;
 
     const nuevaCantidad = tareaActual.productos[productoIndex].cantidad + incremento;
-    
+
     if (nuevaCantidad < 1) {
       // Eliminar el producto si la cantidad es menor a 1
       const nuevosProductos = tareaActual.productos.filter(p => p.id !== productoId);
@@ -177,7 +166,7 @@ export default function TareasReposicion() {
     const hoySinHora = new Date(hoy.setHours(0, 0, 0, 0));
 
     return fechaTareaSinHora < hoySinHora;
-  };  
+  };
 
   return (
     <div className="container mx-auto p-4">
@@ -185,13 +174,13 @@ export default function TareasReposicion() {
       <div className="flex space-x-4 mb-4">
         <button
           onClick={() => setMostrarCrearTarea(true)}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
         >
           Crear Tarea
         </button>
         <button
           onClick={() => setMostrarHistorial(true)}
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Historial de Tareas
         </button>
@@ -204,9 +193,8 @@ export default function TareasReposicion() {
           {tareas.map((tarea) => (
             <div
               key={tarea.id}
-              className={`p-4 border rounded-lg cursor-pointer ${
-                esTareaAntigua(tarea.fecha) ? 'border-red-500 bg-red-50' : ''
-              }`}
+              className={`p-4 border rounded-lg cursor-pointer ${esTareaAntigua(tarea.fecha) ? 'border-red-500 bg-red-50' : ''
+                }`}
               onClick={() => {
                 setTareaActual(tarea);
                 setMostrarDetalleTarea(true);
@@ -219,28 +207,8 @@ export default function TareasReposicion() {
               <p className="text-sm text-gray-600">
                 Productos: {tarea.productos?.length || 0}
               </p>
-              <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setTareaActual(tarea);
-                      eliminarTarea();
-                    }}
-                    className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-sm"
-                  >
-                    Eliminar Tarea
-                  </button>
               {esTareaAntigua(tarea.fecha) && (
                 <div className="mt-2 flex justify-end space-x-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setTareaActual(tarea);
-                      setMostrarBusquedaProducto(true);
-                    }}
-                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded text-sm"
-                  >
-                    Agregar Producto
-                  </button>
                 </div>
               )}
             </div>
@@ -248,7 +216,6 @@ export default function TareasReposicion() {
         </div>
       </div>
 
-      {/* Modales existentes */}
       {/* Modal para crear tarea */}
       <Transition.Root show={mostrarCrearTarea} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setMostrarCrearTarea}>
@@ -276,39 +243,36 @@ export default function TareasReposicion() {
                 leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
               >
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                    <div className="sm:flex sm:items-start">
-                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                        <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
-                          Crear Nueva Tarea
-                        </Dialog.Title>
-                        <div className="mt-2">
-                          <input
-                            type="text"
-                            value={titulo}
-                            onChange={(e) => setTitulo(e.target.value)}
-                            placeholder="Título de la tarea"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          />
-                        </div>
-                      </div>
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4 flex flex-col items-center space-y-4">
+                    <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900 text-center">
+                      Crear Nueva Tarea
+                    </Dialog.Title>
+                    <div className="w-full max-w-md">
+                      <input
+                        type="text"
+                        value={titulo}
+                        onChange={(e) => setTitulo(e.target.value)}
+                        placeholder="Título de la tarea"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        required
+                      />
                     </div>
-                  </div>
-                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                    <button
-                      type="button"
-                      className="inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-                      onClick={crearTarea}
-                    >
-                      Crear
-                    </button>
-                    <button
-                      type="button"
-                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                      onClick={() => setMostrarCrearTarea(false)}
-                    >
-                      Cancelar
-                    </button>
+                    <div className="w-full max-w-md flex justify-center space-x-4">
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                        onClick={() => setMostrarCrearTarea(false)}
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        className="inline-flex justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500"
+                        onClick={() => crearTarea()}
+                      >
+                        Crear y Agregar Producto
+                      </button>
+                    </div>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>
@@ -385,26 +349,26 @@ export default function TareasReposicion() {
                   <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                     <button
                       type="button"
-                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
                       onClick={() => setMostrarDetalleTarea(false)}
                     >
-                      Cerrar
+                      <CircleX className="h-5 w-5" />
+                    </button>
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
+                      onClick={eliminarTarea}
+                    >
+                      <Trash2 className="h-5 w-5" />
                     </button>
                     {!esTareaAntigua(tareaActual?.fecha) && (
                       <>
                         <button
                           type="button"
-                          className="mt-3 inline-flex w-full justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
+                          className="mt-3 inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
                           onClick={() => setMostrarBusquedaProducto(true)}
                         >
-                          Agregar Producto
-                        </button>
-                        <button
-                          type="button"
-                          className="mt-3 inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto"
-                          onClick={eliminarTarea}
-                        >
-                          Eliminar Tarea
+                          <CircleFadingPlus className="h-5 w-5" />
                         </button>
                       </>
                     )}
@@ -432,7 +396,7 @@ export default function TareasReposicion() {
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 overflow-y-auto">
-            <div className="flex min-:items-center sm:p-0">
+            <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -451,20 +415,93 @@ export default function TareasReposicion() {
                         </Dialog.Title>
                         <div className="mt-2 max-h-96 overflow-y-auto">
                           {tareas.filter(tarea => esTareaAntigua(tarea.fecha)).map((tarea) => (
-                            <div key={tarea.id} className="mb-4 p-4 border rounded-lg">
+                            <div key={tarea.id} className="mb-4 p-4 border rounded-lg cursor-pointer" onClick={() => {
+                              setTareaActual(tarea);
+                              setMostrarProductosTarea(true);
+                            }}>
                               <h4 className="font-semibold">{tarea.titulo}</h4>
                               <p className="text-sm text-gray-600">
                                 Fecha: {new Date(tarea.fecha).toLocaleString()}
                               </p>
-                              <ul className="mt-2">
-                                {tarea.productos?.map((producto, index) => (
-                                  <li key={index} className="text-sm">
-                                    {producto.nombre} - Cantidad: {producto.cantidad}
-                                  </li>
-                                ))}
-                              </ul>
+                              <p className="text-sm text-gray-600">
+                                Productos: {tarea.productos?.length || 0}
+                              </p>
                             </div>
                           ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+
+                    <button
+                      type="button"
+                      className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
+                      onClick={() => setMostrarHistorial(false)}
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition.Root>
+
+      {/* Modal para mostrar productos de una tarea */}
+      <Transition.Root show={mostrarProductosTarea} as={Fragment}>
+        <Dialog as="div" className="relative z-10" onClose={setMostrarProductosTarea}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 z-10 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                enterTo="opacity-100 translate-y-0 sm:scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+                leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              >
+                <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                  <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                    <div className="sm:flex sm:items-start">
+                      <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                        <Dialog.Title as="h3" className="text-base font-semibold leading-6 text-gray-900">
+                          Productos de la Tarea
+                        </Dialog.Title>
+                        <div className="mt-2 max-h-96 overflow-y-auto">
+                          <ul className="divide-y divide-gray-200">
+                            {tareaActual?.productos?.map((producto, index) => (
+                              <li key={index} className="py-4">
+                                <div className="flex items-center space-x-4">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-gray-900 truncate">
+                                      {producto.nombre}
+                                    </p>
+                                    <p className="text-sm text-gray-500 truncate">
+                                      Código: {producto.codigo}
+                                    </p>
+                                  </div>
+                                  <div className="inline-flex items-center text-base font-semibold text-gray-900">
+                                    Cantidad: {producto.cantidad}
+                                  </div>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
                         </div>
                       </div>
                     </div>
@@ -473,7 +510,7 @@ export default function TareasReposicion() {
                     <button
                       type="button"
                       className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                      onClick={() => setMostrarHistorial(false)}
+                      onClick={() => setMostrarProductosTarea(false)}
                     >
                       Cerrar
                     </button>
@@ -501,7 +538,7 @@ export default function TareasReposicion() {
           </Transition.Child>
 
           <div className="fixed inset-0 z-10 overflow-y-auto">
-            <div className="flex min-:items-center sm:p-0">
+            <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -522,10 +559,22 @@ export default function TareasReposicion() {
                           <input
                             type="text"
                             value={codigoProducto}
-                            onChange={(e) => setCodigoProducto(e.target.value)}
+                            onChange={(e) => {
+                              let value = e.target.value;
+                              value = value.replace(/\D/g, '');
+                              if (value.length > 8) {
+                                value = value.slice(0, 8);
+                              }
+                              if (value.length > 6) {
+                                value = value.slice(0, 6) + '-' + value.slice(6);
+                              }
+
+                              setCodigoProducto(value);
+                            }}
                             placeholder="Código del producto"
                             className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                           />
+
                           <button
                             onClick={buscarProducto}
                             className="mt-2 w-full inline-flex justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
@@ -577,4 +626,3 @@ export default function TareasReposicion() {
     </div>
   );
 }
-

@@ -213,48 +213,6 @@ export default function ProductPage() {
     });
   };
 
-  const handleUpdateProduct = async (e) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-
-    setIsSubmitting(true);
-    const formData = new FormData();
-    Object.keys(newProduct).forEach((key) => {
-      if (key === "sizes") {
-        formData.append(key, JSON.stringify(newProduct[key]));
-      } else if (key === "image" && newProduct[key]) {
-        formData.append(key, newProduct[key]);
-      } else {
-        formData.append(key, newProduct[key]);
-      }
-    });
-
-    try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/products/${selectedProduct.id}/`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Failed to update product");
-      }
-      const updatedProduct = await response.json();
-      setProducts((prevProducts) =>
-        prevProducts.map((p) =>
-          p.id === updatedProduct.id ? updatedProduct : p
-        )
-      );
-      setEditProductOpen(false);
-      setQuickViewOpen(false);
-    } catch (error) {
-      console.error("Error updating product:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const actualizarProducto = async (product) => {
     console.log(product.id);
 
@@ -301,17 +259,9 @@ export default function ProductPage() {
   return (
     <div className="bg-white">
       <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
-          <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-            Bodega
-          </h1>
-        </div>
+        <h1 className="text-3xl font-bold mb-4">Bodega</h1>
 
         <section aria-labelledby="products-heading" className="pb-24 pt-6">
-          <h2 id="products-heading" className="sr-only">
-            Products
-          </h2>
-
           <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
             <div className="lg:col-span-4">
               <div className="mb-4">
@@ -328,8 +278,6 @@ export default function ProductPage() {
               </div>
               <div className="bg-white">
                 <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-                  <h2 className="">Productos</h2>
-
                   <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
                     {filteredProducts.map((product) => (
                       <div key={product.id} className="group relative">
@@ -1013,4 +961,3 @@ export default function ProductPage() {
     </div>
   );
 }
-
