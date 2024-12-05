@@ -1,0 +1,1402 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "Envíos",
+        "description": "REST Transport-Orders API",
+        "version": "1.0"
+    },
+    "servers": [
+        {
+            "url": "http://testservices.wschilexpress.com/transport-orders"
+        },
+        {
+            "url": "https://testservices.wschilexpress.com/transport-orders"
+        }
+    ],
+    "paths": {
+        "/api/v{version}/tracking": {
+            "post": {
+                "tags": [
+                    "Tracking"
+                ],
+                "summary": "Consulta Individual De Envío ",
+                "description": "Permite revisar el estado de tu orden de transporte.",
+                "operationId": "Tracking",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "Versión actual 1.0",
+                        "required": true,
+                        "schema": {
+                            "enum": [
+                                "1.0"
+                            ],
+                            "type": "string",
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "<ul class=\"list-group\" >\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>transportOrderNumber</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tinteger\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tobligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tNúmero de la Orden de Transporte (OT) que se va a reimprimir\n\t\t\t</div>\n\t\t</div>\n\t</li>\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>reference</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tstring (max)\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tobligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tReferencia para identificar el envío, ingresado por el cliente\n\t\t\t</div>\n\t\t</div>\n\t</li>\n\t\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>rut</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tstring (10)\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tobligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tRut de la empresa que generó la Orden de Transporte\n\t\t\t</div>\n\t\t</div>\n\t</li>\n\t\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>showTrackingEvents</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tinteger\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tobligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tIndicador del tipo de consulta que se realiza; 0 = Mostrar estado actual, 1 = Mostrar todos los eventos que han sucedido\n\t\t\t</div>\n\t\t</div>\n\t</li>\n</ul>",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TrackingRequest"
+                            },
+                            "example": {
+                                "reference": "27699451457",
+                                "transportOrderNumber": 99726299584,
+                                "rut": 77398220,
+                                "showTrackingEvents": 1
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "<p></p>\n<h4> Cuerpo de la respuesta</h4>\n<p></p>\n<ul class=\"list-group\" >\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.addressData</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Datos del destino de la orden\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.addressData.destinationCoverageCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (50)\n         </div>\n         <div class=\"col-md-6\">\n            Cobertura de destino\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.addressData.originCoverageCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (50)\n         </div>\n         <div class=\"col-md-6\">\n            Cobertura de origen\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.addressData.address</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Dirección de destino\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.addressData.latitude</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (19,8)\n         </div>\n         <div class=\"col-md-6\">\n            Latitud de la dirección de destino\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.addressData.longitude</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (19,8)\n         </div>\n         <div class=\"col-md-6\">\n            Longitud de la dirección de destino\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.deliveryData</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Datos de la persona que se entregó el envío\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.deliveryData.receptorRut</label>\n         </div>\n         <div class=\"col-md-2\">\n            string(10)\n         </div>\n         <div class=\"col-md-6\">\n            Rut de la persona que se entregó el envío\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.deliveryData.receptorName</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Nombre de la persona a la cual se entregó el envío\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.deliveryData.deliveryDate</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Fecha de entrega\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.deliveryData.deliveryHour</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Hora de entrega\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.deliveryData.deliveryDateTime</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Fecha y Hora de entrega Completa\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Información de cada evento que ha tenido el envío\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.eventDate</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Fecha del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.eventHour</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Hora del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.description</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.motive</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Motivo adicional del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.location</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Lugar del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.latitude</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (19,2)\n         </div>\n         <div class=\"col-md-6\">\n            Latitud del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.longitude</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (19,2)\n         </div>\n         <div class=\"col-md-6\">\n            Longitud del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.eventDateTime</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Fecha y hora completa del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.officeId</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Código de sucursal que imputo el evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.certificadoEntrega</label>\n         </div>\n         <div class=\"col-md-2\">\n            string\n         </div>\n         <div class=\"col-md-6\">\n            Url de certificado de entrega\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.code</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Información del codigo interno del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.code.eventCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Código interno del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.code.compEventCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Código compuesto interno del evento\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.code.clientEventCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Código del evento mapeado con el cliente\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.code.clientCompEventCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Código compuesto del evento mapeado con el cliente\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.trackingEvents.code.clientEventDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del evento mapeado con el cliente\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.internationalData</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Información del envío internacional en caso que aplique\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.internationalData.country</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (50)\n         </div>\n         <div class=\"col-md-6\">\n            País de origen\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.internationalData.areaGuide</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Número de guía aérea\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.internationalData.trackingNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Número de la Orden de Transporte\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.internationalData.courier</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Empresa de courier que realiza el envío\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.internationalData.zipCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Código postal\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Datos de la Orden de Transporte (OT)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.transportOrderNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Número de la Orden de Transporte (OT)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.certificateNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número de certificado asociado al envío\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.reference</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Referencia ingresada por el cliente para identificar el envío\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.product</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Tipo de producto enviado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.service</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Tipo de servicio de entrega contratado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.dimensions</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Dimensiones del paquete enviado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.weight</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (10,2)\n         </div>\n         <div class=\"col-md-6\">\n            Peso de paquete enviado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.status</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (50)\n         </div>\n         <div class=\"col-md-6\">\n            Estado actual del envío\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.transportOrderData.locationStatus</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Locación donde se generó el estado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Código de resultado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del resultado\n         </div>\n      </div>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>errors</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del error presentado en caso que aplique.\n         </div>\n      </div>\n   </li>\n</ul>",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/"
+                                },
+                                "example": {
+                                    "data": {
+                                        "addressData": {
+                                            "destinationCoverageCode": "PUDAHUEL",
+                                            "originCoverageCode": "SAN FERNANDO",
+                                            "address": "Villa El Roble Pasaje Heriberto Soto 1043",
+                                            "latitude": "0.00000000",
+                                            "longitude": "0.00000000"
+                                        },
+                                        "deliveryData": {
+                                            "receptorRut": "16507428",
+                                            "receptorName": "JONATHAN TARI-O",
+                                            "deliveryDate": "2019-03-12",
+                                            "deliveryHour": "2024-12-05",
+                                            "deliveryDateTime": "2019-12-03T16:00:00.0000000+00:00"
+                                        },
+                                        "trackingEvents": [
+                                            {
+                                                "eventDate": "2018-10-29",
+                                                "eventHour": "2024-12-05",
+                                                "description": "PIEZA ENTREGADA A DESTINATARIO",
+                                                "motive": null,
+                                                "location": null,
+                                                "latitude": "0.00000000",
+                                                "longitude": "0.00000000",
+                                                "eventDateTime": "2018-10-29T16:06:00.0000000+00:00",
+                                                "officeId": "0",
+                                                "certificadoEntrega": "https://cxpgdastprod.blob.core.windows.net/certificado-pod/712694380873/certificado_pod_712694380873.pdf",
+                                                "code": {
+                                                    "eventCode": "14",
+                                                    "compEventCode": "14-0",
+                                                    "clientEventCode": "",
+                                                    "clientCompEventCode": "0401",
+                                                    "clientEventDescription": "ENTREGADO"
+                                                }
+                                            },
+                                            {
+                                                "eventDate": "2018-10-29",
+                                                "eventHour": "2024-12-05",
+                                                "description": "PIEZA EN RUTA",
+                                                "motive": null,
+                                                "location": null,
+                                                "latitude": "0.00000000",
+                                                "longitude": "0.00000000",
+                                                "eventDateTime": "2018-10-29T09:05:00.0000000+00:00",
+                                                "officeId": "0",
+                                                "code": {
+                                                    "eventCode": "13",
+                                                    "compEventCode": "13-0",
+                                                    "clientEventCode": "",
+                                                    "clientCompEventCode": "0211",
+                                                    "clientEventDescription": "EN RUTA"
+                                                }
+                                            },
+                                            {
+                                                "eventDate": "2018-10-26",
+                                                "eventHour": "2024-12-05",
+                                                "description": "PIEZA EN TRANSITO AL DESTINO ",
+                                                "motive": null,
+                                                "location": null,
+                                                "latitude": "0.00000000",
+                                                "longitude": "0.00000000",
+                                                "eventDateTime": "2018-10-26T19:12:00.0000000+00:00",
+                                                "officeId": "0",
+                                                "code": {
+                                                    "eventCode": "11",
+                                                    "compEventCode": "11",
+                                                    "clientEventCode": "",
+                                                    "clientCompEventCode": "",
+                                                    "clientEventDescription": ""
+                                                }
+                                            },
+                                            {
+                                                "eventDate": "2018-10-26",
+                                                "eventHour": "2024-12-05",
+                                                "description": "RECEPCIONADO",
+                                                "motive": null,
+                                                "location": "SAN FERNANDO",
+                                                "latitude": "-34.59000000",
+                                                "longitude": "-70.98000000",
+                                                "eventDateTime": "2018-10-26T18:42:00.0000000+00:00",
+                                                "officeId": "0",
+                                                "code": {
+                                                    "eventCode": "4",
+                                                    "compEventCode": "4",
+                                                    "clientEventCode": "0201",
+                                                    "clientCompEventCode": "0201",
+                                                    "clientEventDescription": "EN RUTA"
+                                                }
+                                            }
+                                        ],
+                                        "internationalData": {
+                                            "country": "",
+                                            "areaGuide": "",
+                                            "trackingNumber": "",
+                                            "courier": "",
+                                            "zipCode": ""
+                                        },
+                                        "transportOrderData": {
+                                            "transportOrderNumber": "99726299584",
+                                            "certificateNumber": "696437257014",
+                                            "reference": "27699451457",
+                                            "product": "ENCOMIENDA",
+                                            "service": "DHS",
+                                            "dimensions": "20x40x20",
+                                            "weight": "4.00",
+                                            "status": "DESCARGADA",
+                                            "locationStatus": "SAN FERNANDO"
+                                        }
+                                    },
+                                    "statusCode": 0,
+                                    "statusDescription": "Extraccion exitosa",
+                                    "errors": null
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "data": null,
+                                    "statusCode": -41,
+                                    "statusDescription": "La OT no se encuentra disponible para consultar",
+                                    "errors": null
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "milliseconds": 0,
+                                    "statusCode": 0,
+                                    "statusDescription": "string",
+                                    "errors": [
+                                        "string"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v{version}/transport-orders": {
+            "post": {
+                "tags": [
+                    "TransportOrders"
+                ],
+                "summary": "Generar envío",
+                "description": "Permite generar envío individuales o múltiples que quedarán asociados a un número de seguimiento u Orden de Transporte, junto con entregar la etiqueta que debe ser añadida a tus productos.",
+                "operationId": "GenerateTransportOrder",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "Versión actual 1.0",
+                        "required": true,
+                        "schema": {
+                            "enum": [
+                                "1.0"
+                            ],
+                            "type": "string",
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "<ul class=\"list-group\" >\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>header</label>\n         </div>\n         <div class=\"col-md-1\">\n            objeto\n         </div>\n         <div class=\"col-md-1\">\n         </div>\n         <div class=\"col-md-6\">\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>header.certificateNumber</label>\n         </div>\n         <div class=\"col-md-1\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Número de certificado, si no se ingresa se creará uno nuevo\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>header.customerCardNumber</label>\n         </div>\n         <div class=\"col-md-1\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Número de Tarjeta Cliente Chilexpress (TCC). TCC pruebas = 18578680\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>header.countyOfOriginCoverageCode</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (4)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Código de cobertura de origen obtenido por la API Consultar Coberturas\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>header.labelType</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (4)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Tipo de etiqueta; 0 = Solo Datos;1 = EPL Impresora Zebra + Datos;2 = Imagen en Binario + Datos\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>header.marketplaceRut</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Rut asociado al Marketplace sin puntos ni digito verificador. RUT pruebas = 96756430\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>header.sellerRut</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Rut asociado al Vendedor sin puntos ni digito verificador. RUT pruebas = 96756430\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details</label>\n         </div>\n         <div class=\"col-md-1\">\n            objeto\n         </div>\n         <div class=\"col-md-1\">\n         </div>\n         <div class=\"col-md-6\">\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Se debe ingresar un detalle de dirección para la entrega (DEST) o otro para la devolución (DEV)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.addressId</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Id de la dirección obtenida de la API Georeferenciar dirección\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.countyCoverageCode</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (4)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Cobertura de destino obtenido por la API Consultar Coberturas\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.streetName</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (100)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Nombre de la calle\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.streetNumber</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (10)\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Numeración de la calle\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.supplement</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (max)\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Información complementaria de la dirección, ejemplo Dpto 301\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.addressType</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (4)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Tipo de dirección; DEST = Entrega, DEV = Devolución.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.deliveryOnCommercialOffice</label>\n         </div>\n         <div class=\"col-md-1\">\n            boolean\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Indicador si es una entrega en oficina comercial (true) o entrega en domicilio (false). En caso de ser (true), se debe agregar el campo commercialOfficeId con el código de Sucursal obtenido por la API Oficinas de Entrega\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.commercialOfficeId</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Código de Sucursal obtenido por la API Oficinas de Entrega\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.addresses.observation</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (max)\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Observaciones adicionales\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.contacts</label>\n         </div>\n         <div class=\"col-md-1\">\n            objeto\n         </div>\n         <div class=\"col-md-1\">\n         </div>\n         <div class=\"col-md-6\">\n            Se debe entregar un detalle para los datos de contacto del destinatario (D) y otro para los del remitente. (R)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.contacts.name</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (100)\n         </div>\n         <div class=\"col-md-1\">\n            Obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Nombre de contacto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.contacts.phoneNumber</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (15)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Teléfono de contacto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.contacts.mail</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (max)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Correo electrónico de contacto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.contacts.contactType</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (100)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Tipo de contacto; Destinatario (D), Remitente (R)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package</label>\n         </div>\n         <div class=\"col-md-1\">\n            objeto\n         </div>\n         <div class=\"col-md-1\">\n         </div>\n         <div class=\"col-md-6\">\n            Información de los productos que se envían. Se puede ingresar un objeto por cada bulto que se envíe.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.weight</label>\n         </div>\n         <div class=\"col-md-1\">\n            numeric (10,2)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Peso en kilogramos, separado por punto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.height</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Altura en centímetros, separado por punto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.width</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Ancho en centímetros, separado por punto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.lenght</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Largo en centímetros, separado por punto \n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.serviceDeliveryCode</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Código del servicio de entrega, obtenido de la API Cotización \n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.productCode</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Código del tipo de producto a enviar; 1 = Documento, 3 = Encomienda \n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.deliveryReference</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (150)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Referencia que permite identificar el envío por parte del cliente.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.groupReference</label>\n         </div>\n         <div class=\"col-md-1\">\n            string (150)\n         </div>\n         <div class=\"col-md-1\">\n            obligatorio\n         </div>\n         <div class=\"col-md-6\">\n            Referencia que permite identificar un grupo de bultos que va por parte del cliente.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.declaredValue</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Valor declarado del producto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.declaredContent</label>\n         </div>\n         <div class=\"col-md-1\">\n            integer\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Tipo de producto enviado: 1 = Artículos Personales, 10000331 = Celular, 2 = Educación, 4 = Vestuario, 5 = Otros, 7 = Tecnología\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>details.package.receivableAmountInDelivery</label>\n         </div>\n         <div class=\"col-md-1\">\n            boolean\n         </div>\n         <div class=\"col-md-1\">\n            opcional\n         </div>\n         <div class=\"col-md-6\">\n            Monto a cobrar, en caso que el cliente tenga habilitada esta opción.\n         </div>\n      </div>\n   </li>\n</ul>",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransportOrderRequestDTO"
+                            },
+                            "example": {
+                                "header": {
+                                    "certificateNumber": 0,
+                                    "customerCardNumber": "18578680",
+                                    "countyOfOriginCoverageCode": "PUDA",
+                                    "labelType": 2,
+                                    "marketplaceRut": "96756430",
+                                    "sellerRut": "DEFAULT"
+                                },
+                                "details": [
+                                    {
+                                        "addresses": [
+                                            {
+                                                "addressId": 0,
+                                                "countyCoverageCode": "PROV",
+                                                "streetName": "AVENIDA MANUEL MONTT",
+                                                "streetNumber": 427,
+                                                "supplement": "",
+                                                "addressType": "DEST",
+                                                "deliveryOnCommercialOffice": true,
+                                                "commercialOfficeId": "706",
+                                                "observation": "DEFAULT"
+                                            },
+                                            {
+                                                "addressId": 0,
+                                                "countyCoverageCode": "PLCA",
+                                                "streetName": "SARMIENTO",
+                                                "streetNumber": 120,
+                                                "supplement": "DEFAULT",
+                                                "addressType": "DEV",
+                                                "deliveryOnCommercialOffice": false,
+                                                "observation": "DEFAULT"
+                                            }
+                                        ],
+                                        "contacts": [
+                                            {
+                                                "name": "Claudia Estevez",
+                                                "phoneNumber": "223824861",
+                                                "mail": "cestevez@chilexpress.cl",
+                                                "contactType": "R"
+                                            },
+                                            {
+                                                "name": "Marcela Vera",
+                                                "phoneNumber": "227665433",
+                                                "mail": "mevera@chilexpress.cl",
+                                                "contactType": "D"
+                                            }
+                                        ],
+                                        "packages": [
+                                            {
+                                                "weight": "1",
+                                                "height": "1",
+                                                "width": "1",
+                                                "length": "1",
+                                                "serviceDeliveryCode": "3",
+                                                "productCode": "3",
+                                                "deliveryReference": "TEST-EOC-17",
+                                                "groupReference": "GRUPO",
+                                                "declaredValue": "1000",
+                                                "declaredContent": "1",
+                                                "receivableAmountInDelivery": 1000
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "<p></p>\n<h4> Cuerpo de la respuesta</h4>\n<p></p>\n<ul class=\"list-group\" >\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.header</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.header.certificateNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número del certificado asociado al envío.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.header.countOfGeneratedOrders</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Total de Órdenes de Transporte generadas  (OT)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Se entregará un detalle por cada Orden de Transporte o bulto generado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.transportOrderNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número de la Orden de Transporte\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.reference</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Referencia del envío ingresada en el campo deliveryReference.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.productDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Código del producto transportado.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.ServiceDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Abreviación del servicio contratado; PREX = PRIORITARIO, CHEX = EXPRESS, XTEN = EXTENDIDO, XTRE = EXTREMOS, AMPM = SERVICIO AMPM, CHEX LD = EXPRESS LDEV, XTEN LD = EXTENDIDO LDEV, XTRE LD = EXTREMOS LDEV, BIGT1 = ENC. GRANDES, BIGT3 = ENC. GRANDES EXTENDIDO, BIGT1 LD = LOG DEV ENC. GRANDES, BIGT3 LD = LOG DEV ENC. GRANDES EXTENDIDO\n         </div>\n      </div>\n   </li>\n      <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.serviceDescriptionFull</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Nombre del servicio contratado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.genericString1</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Identificador del número de bulto del pedido\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.genericString2</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Identificador del tipo de cliente que contrata el servicio\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.deliveryTypeCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Identificador del tipo de entrega en oficina en caso que aplique; EO = Entrega en oficina, PU = Entrega en PickUp \n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.destinationCoverageAreaName</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Nombre de la cobertura de destino\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.additionalProductDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Información adicional del envío; V = Valorado, A = Aéreo\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.barcode</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Código de barras de la etiqueta\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.clasificationData</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Datos internos de clasificación\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.printedDate</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Fecha de impresión en formato ISO 8601\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.labelVersion</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Versión de la etiqueta\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.distributionDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Centro de distribución responsable\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.companyName</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Valor fijo Chilexpress\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.recipient</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Nombre del destinatario\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.address</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Dirección de destino \n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.groupReference</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Referencia del grupo de bultos ingresado en el campo groupReference\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.createdDate</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Fecha de creación\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.label</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Datos de la etiqueta para las opciones 1 y 2\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.label.labelData</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Código de la etiqueta EPL o en binaria\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.label.labelType</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Código del tipo de etiqueta generada; 0 = Datos,1 = EPL, 2 = Imagen Binaria\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Código de resultado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del resultado\n         </div>\n      </div>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>errors</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del error presentado en caso que aplique.\n         </div>\n      </div>\n   </li>\n</ul>",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "data": {
+                                        "header": {
+                                            "certificateNumber": 712100832940,
+                                            "countOfGeneratedOrders": 1
+                                        },
+                                        "detail": [
+                                            {
+                                                "transportOrderNumber": 712100833404,
+                                                "reference": "TEST-EOC-17",
+                                                "productDescription": "E",
+                                                "serviceDescription": "CHEX",
+                                                "serviceDescriptionFull": "EXPRESS",
+                                                "genericString1": "2024-01-01",
+                                                "genericString2": "2024-01-01",
+                                                "deliveryTypeCode": "EOC",
+                                                "destinationCoverageAreaName": "(RM)PROVIDENCIA",
+                                                "additionalProductDescription": "",
+                                                "barcode": "61003033117121008334040",
+                                                "classificationData": "6100303311",
+                                                "printedDate": "15-12-2020",
+                                                "labelVersion": "V1.0",
+                                                "distributionDescription": "C MIGUEL CLARO-1",
+                                                "companyName": "CHILEXPRESS SA",
+                                                "recipient": "Marcela Vera",
+                                                "address": "AVENIDA MANUEL MONTT 427 LOCAL 2",
+                                                "groupReference": "GRUPO",
+                                                "createdDate": "2020-12-15T11:22:19.1300000+00:00",
+                                                "label": {
+                                                    "labelData": "",
+                                                    "labelType": "Binary"
+                                                },
+                                                "statusCode": 0,
+                                                "statusDescription": "Extraccion exitosa"
+                                            }
+                                        ]
+                                    },
+                                    "statusCode": 0,
+                                    "statusDescription": "Extraccion exitosa",
+                                    "errors": null
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "statusCode": 90,
+                                    "statusDescription": "El JSON de entrada no es válido",
+                                    "errors": [
+                                        "The CustomerCardNumber field is required."
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "milliseconds": 0,
+                                    "statusCode": 0,
+                                    "statusDescription": "string",
+                                    "errors": [
+                                        "string"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v{version}/transport-order-certificates": {
+            "put": {
+                "tags": [
+                    "TransportOrdersCertificates"
+                ],
+                "summary": "Cierre De Certificado",
+                "description": "Permite cerrar un certificado creado.",
+                "operationId": "CloseCertificate",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "Versión actual 1.0",
+                        "required": true,
+                        "schema": {
+                            "enum": [
+                                "1.0"
+                            ],
+                            "type": "string",
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "<ul class=\"list-group\" >\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-3\">\n\t\t\t\t<label>certificateNumber</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tnumeric (12)\n\t\t\t</div>\n\t\t\t<div class=\"col-md-2\">\n\t\t\t\tobligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tNúmero de certificado\n\t\t\t</div>\n\t\t</div>\n\t</li>\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-3\">\n\t\t\t\t<label>certificateType</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">integer</div>\n\t\t\t<div class=\"col-md-2\">obligatorio</div>\n\t\t\t<div class=\"col-md-6\">Tipo de certificado; 1 = imagen binaria, 2 = Datos</div>\n\t\t</div>\n\t</li>\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-3\">\n\t\t\t\t<label>dropNumber</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tinteger\n\t\t\t</div>\n\t\t\t<div class=\"col-md-2\">\n\t\t\t\tobligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tNúmero de retiro asociado\n\t\t\t</div>\n\t\t</div>\n\t</li>\n</ul>",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CertificateToClose"
+                            },
+                            "example": {
+                                "certificateNumber": 712000001554,
+                                "certificateType": 1,
+                                "dropNumber": 0
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "<p></p>\n<h4> Cuerpo de la respuesta</h4>\n<p></p>\n<ul class=\"list-group\" >\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.certificateNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número de certificado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.printedNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Fecha de impresión\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.rutNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Rut de la empresa\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.businessName</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (200)\n         </div>\n         <div class=\"col-md-6\">\n            Nombre de la empresa\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.amountOfPieces</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Número de Órdenes de Transporte asociadas\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.customerCardNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número de la Tarjeta de Cliente Chilexpress (TCC)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.dropNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Número de retiro asociado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.pickupAddress</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Dirección de retiro\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.binaryImage</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Imagen binaria del certificado\n         </div>\n      </div>\n   </li>\n      <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.imagePdf</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Certificado en pdf en código base64\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.detail</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Cantidad de envíos por tipo de producto y servicio\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.detail.product</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Código del producto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.detail.service</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Código del servicio\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>closedCetificate.detail.amount</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Cantidad de envíos asociados\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Código de resultado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del resultado\n         </div>\n      </div>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>errors</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del error presentado en caso que aplique\n         </div>\n      </div>\n   </li>\n</ul>",
+                        "content": {
+                            "application/json": {
+                                "example": "{\n    \"closedCertificate\": {\n        \"certificateNumber\": \"712000001554\",\n        \"printedDate\": \"4/16/2019 12:11:12 PM\",\n        \"rutNumber\": 96756430,\n        \"businessName\": \"CHILEXPRESS SA\",\n        \"amountOfPieces\": 217,\n        \"customerCardNumber\": 18578680,\n        \"dropNumber\": 0,\n        \"pickupAddress\": \"\",\n        \"binaryImage\": \"\"\n        ,\n        \"imagePdf\": \"\"\n        \"detail\": [\n            {\n                \"product\": \"3\",\n                \"service\": \"3\",\n                \"amount\": 79\n            },\n            {\n                \"product\": \"3\",\n                \"service\": \"4\",\n                \"amount\": 67\n            },\n            {\n                \"product\": \"3\",\n                \"service\": \"5\",\n                \"amount\": 71\n            }\n        ]\n    },\n    \"statusCode\": 0,\n    \"statusDescription\": \"Extraccion exitosa\",\n    \"errors\": null\n}"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "closedCertificate": null,
+                                    "statusCode": -3,
+                                    "statusDescription": "string",
+                                    "errors": []
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "milliseconds": 0,
+                                    "statusCode": 0,
+                                    "statusDescription": "string",
+                                    "errors": [
+                                        "string"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "TransportOrdersCertificates"
+                ],
+                "summary": "Generación De Certificados",
+                "description": "Permite crear un certificado al cual se pueden asociar un grupo de productos a enviar.",
+                "operationId": "CreateCertificate",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "Versión actual 1.0",
+                        "required": true,
+                        "schema": {
+                            "enum": [
+                                "1.0"
+                            ],
+                            "type": "string",
+                            "default": "1.0"
+                        }
+                    },
+                    {
+                        "name": "customerCardNumber",
+                        "in": "query",
+                        "description": "Número de tarjeta de cliente Chilexpress (TCC)",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "<p></p>\n<h4> Cuerpo de la respuesta</h4>\n<p></p>\n<ul class=\"list-group\" >\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>certificateNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número de certificado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Código de resultado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del resultado\n         </div>\n      </div>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>errors</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del error presentado en caso que aplique.\n         </div>\n      </div>\n   </li>\n</ul>",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "certificateNumber": 712000051346,
+                                    "statusCode": 0,
+                                    "statusDescription": "Extaccion exitosa",
+                                    "errors": null
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "certificateNumber": 712000051346,
+                                    "statusCode": 0,
+                                    "statusDescription": "Extaccion exitosa",
+                                    "errors": null
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "milliseconds": 0,
+                                    "statusCode": 0,
+                                    "statusDescription": "string",
+                                    "errors": [
+                                        "string"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v{version}/transport-order-certificates/{certificateNumber}": {
+            "get": {
+                "tags": [
+                    "TransportOrdersCertificates"
+                ],
+                "summary": "Consulta de certificados",
+                "description": "Permite consultar la información de los envíos asociados a un certificado.",
+                "operationId": "GetCertificate",
+                "parameters": [
+                    {
+                        "name": "certificateNumber",
+                        "in": "path",
+                        "description": "Numero de certificado",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "Versión actual 1.0",
+                        "required": true,
+                        "schema": {
+                            "enum": [
+                                "1.0"
+                            ],
+                            "type": "string",
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "<p></p>\n<h4> Cuerpo de la respuesta</h4>\n<p></p>\n<ul class=\"list-group\" >\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>certificateNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número de certificado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>rutNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Rut de la empresa\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>businessName</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (200)\n         </div>\n         <div class=\"col-md-6\">\n            Nombre de la empresa\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>customerCardNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número de la Tarjeta de Cliente Chilexpress (TCC)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>amountOfPieces</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Numero de ordenes de transporte asociadas\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>dropNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Número de retiro asociado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>pickupAddress</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Dirección de retiro\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>imagePdf</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            certificado en pdf en código base64\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Cantidad de envíos por tipo de producto y servicio\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.product</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Código del producto\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.service</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Código del servicio\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.amount</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Cantidad de envíos asociados\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Código de resultado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del resultado\n         </div>\n      </div>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>errors</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del error presentado en caso que aplique.\n         </div>\n      </div>\n   </li>\n</ul>",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "data": {
+                                        "certificateNumber": 100000000000,
+                                        "rutNumber": 77000000,
+                                        "businessName": "string",
+                                        "customerCardNumber": 0,
+                                        "amountOfPieces": 0,
+                                        "dropNumber": 0,
+                                        "pickupAddress": "string",
+                                        "binaryImage": "string",
+                                        "state": 1,
+                                        "detail": []
+                                    },
+                                    "statusCode": 0,
+                                    "statusDescription": "string",
+                                    "errors": [
+                                        "string"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "data": null,
+                                    "statusCode": -3,
+                                    "statusDescription": "El certificado de número [123000123] no existe.",
+                                    "errors": null
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "milliseconds": 0,
+                                    "statusCode": 0,
+                                    "statusDescription": "string",
+                                    "errors": [
+                                        "string"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v{version}/transport-orders-labels": {
+            "post": {
+                "tags": [
+                    "TransportOrdersLabels"
+                ],
+                "summary": "Reimpresión De Etiquetas",
+                "description": "Permite generar una nueva etiqueta para una Orden de Transporte existente. ",
+                "operationId": "GenerateLabelForTO",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "description": "Versión actual 1.0",
+                        "required": true,
+                        "schema": {
+                            "enum": [
+                                "1.0"
+                            ],
+                            "type": "string",
+                            "default": "1.0"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "<ul class=\"list-group\" >\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>transportOrderNumber</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tinteger\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tobligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tNúmero de la Orden de Transporte (OT) que se va a reimprimir\n\t\t\t</div>\n\t\t</div>\n\t</li>\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>labelType</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tinteger\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tobligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tTipo de etiqueta; 0 = Solo Datos;1 = EPL Impresora Zebra + Datos;2 = Imagen en Binario + Datos\n\t\t\t</div>\n\t\t</div>\n\t</li>\n</ul>",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TransportOrderLabelRequest"
+                            },
+                            "example": {
+                                "transportOrderNumber": 712019368141,
+                                "labelType": 0
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "<p></p>\n<h4> Cuerpo de la respuesta</h4>\n<p></p>\n<ul class=\"list-group\" >\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.header</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.header.certificateNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número del certificado asociado al envío.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.header.countOfGeneratedOrders</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Total de Órdenes de Transporte generadas  (OT)\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Se entregará un detalle por cada Orden de Transporte generada\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.transportOrderNumber</label>\n         </div>\n         <div class=\"col-md-2\">\n            numeric (12)\n         </div>\n         <div class=\"col-md-6\">\n            Número de la Orden de Transporte\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.reference</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Referencia del envío ingresada en el campo deliveryReference.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.productDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Código del producto transportado.\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.ServiceDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Abreviación del servicio contratado; PREX = PRIORITARIO, CHEX = EXPRESS, XTEN = EXTENDIDO, XTRE = EXTREMOS, AMPM = SERVICIO AMPM, CHEX LD = EXPRESS LDEV, XTEN LD = EXTENDIDO LDEV, XTRE LD = EXTREMOS LDEV, BIGT1 = ENC. GRANDES, BIGT3 = ENC. GRANDES EXTENDIDO, BIGT1 LD = LOG DEV ENC. GRANDES, BIGT3 LD = LOG DEV ENC. GRANDES EXTENDIDO\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.genericString1</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Identificador del número de bulto del pedido\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.genericString2</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Identificador del tipo de cliente que contrata el servicio\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.deliveryTypeCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Identificador del tipo de entrega en oficina en caso que aplique; EO = Entrega en oficina, PU = Entrega en PickUp \n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.destinationCoverageAreaName</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (100)\n         </div>\n         <div class=\"col-md-6\">\n            Nombre de la cobertura de destino\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.additionalProductDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (10)\n         </div>\n         <div class=\"col-md-6\">\n            Información adicional del envío; V = Valorado, A = Aéreo\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.barcode</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Código de barras de la etiqueta\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.clasificationData</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Datos internos de clasificación\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.printedDate</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Fecha de impresión en formato ISO 8601\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.labelVersion</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Versión de la etiqueta\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.distributionDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Centro de distribución responsable\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.companyName</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Valor fijo Chilexpress\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.recipient</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Nombre del destinatario\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.address</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Dirección de destino \n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.groupReference</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Referencia del grupo de bultos ingresado en el campo groupReference\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.createdDate</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Fecha de creación\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.label</label>\n         </div>\n         <div class=\"col-md-2\">\n            objeto\n         </div>\n         <div class=\"col-md-6\">\n            Datos de la etiqueta para las opciones 1 y 2\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.label.labelData</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Código de la etiqueta EPL o en binaria\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>data.detail.label.labelType</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Código del tipo de etiqueta generada; 0 = Datos,1 = EPL, 2 = Imagen Binaria\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusCode</label>\n         </div>\n         <div class=\"col-md-2\">\n            integer\n         </div>\n         <div class=\"col-md-6\">\n            Código de resultado\n         </div>\n      </div>\n   </li>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>statusDescription</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del resultado\n         </div>\n      </div>\n   <li class=\"list-group-item\">\n      <div class=\"row\">\n         <div class=\"col-md-4\">\n            <label>errors</label>\n         </div>\n         <div class=\"col-md-2\">\n            string (max)\n         </div>\n         <div class=\"col-md-6\">\n            Descripción del error presentado en caso que aplique.\n         </div>\n      </div>\n   </li>\n</ul>",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "data": {
+                                        "header": {
+                                            "certificateNumber": 712100832940,
+                                            "countOfGeneratedOrders": 1
+                                        },
+                                        "detail": [
+                                            {
+                                                "transportOrderNumber": 712100833404,
+                                                "reference": "TEST-EOC-17",
+                                                "productDescription": "E",
+                                                "serviceDescription": "CHEX",
+                                                "genericString1": "2024-01-01",
+                                                "genericString2": "2024-01-01",
+                                                "deliveryTypeCode": "EO",
+                                                "destinationCoverageAreaName": "(RM)PROVIDENCIA",
+                                                "additionalProductDescription": "",
+                                                "barcode": "61003033117121008334040",
+                                                "classificationData": "6100303311",
+                                                "printedDate": "15-12-2020",
+                                                "labelVersion": "V1.0",
+                                                "distributionDescription": "C MIGUEL CLARO-1",
+                                                "companyName": "CHILEXPRESS SA",
+                                                "recipient": "Marcela Vera",
+                                                "address": "AVENIDA MANUEL MONTT 427 LOCAL 2",
+                                                "groupReference": "GRUPO",
+                                                "createdDate": "2020-12-15T11:22:19.1300000+00:00",
+                                                "label": {
+                                                    "labelData": "",
+                                                    "labelType": "Binary"
+                                                },
+                                                "statusCode": 0,
+                                                "statusDescription": "Extraccion exitosa"
+                                            }
+                                        ]
+                                    },
+                                    "statusCode": 0,
+                                    "statusDescription": "Extraccion exitosa",
+                                    "errors": null
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "statusCode": 90,
+                                    "statusDescription": "El JSON de entrada no es válido",
+                                    "errors": [
+                                        "A non-empty request body is required."
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "milliseconds": 0,
+                                    "statusCode": 0,
+                                    "statusDescription": "string",
+                                    "errors": [
+                                        "string"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v{version}/tracking/bulk": {
+            "post": {
+                "summary": "Consulta múltiple de envíos",
+                "description": "Permite revisar el estado de varias ordenes de transporte en una sola consulta.",
+                "operationId": "consulta-m-ltiple-de-env-os",
+                "parameters": [
+                    {
+                        "name": "version",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": ""
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": null
+                    }
+                }
+            }
+        },
+        "/api/getTrackingMB": {
+            "post": {
+                "tags": [
+                    "Tracking",
+                    "multibulto"
+                ],
+                "summary": "Tracking Multibulto",
+                "description": "Obtiene el tracking de una Orden de Transporte (OT) con servicio multibulto.",
+                "operationId": "tracking-multibulto",
+                "parameters": [
+                    {
+                        "name": "Ocp-Apim-Subscription-Key",
+                        "in": "header",
+                        "description": "Llave de suscripción",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "<ul class=\"list-group\" >\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>glsReferenciaGrupo</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tstring (150)\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tOpcional\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tReferencia que permite identificar un grupo de bultos que va por parte del cliente.\n\t\t\t\t<br/>\n\t\t\t</div>\n\t\t</div>\n\t</li>\n\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>nroOt</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tinteger\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tOpcional\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tNúmero de la Orden de Transporte (OT) asociada al Multibulto.\n\t\t\t\t<br/>\n\t\t\t</div>\n\t\t</div>\n\t</li>\n\t\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>rut</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tstring (10)\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tObligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tRut de la empresa que generó la  Orden de Transporte (OT).\n\t\t\t\t<br/>\n\t\t\t</div>\n\t\t</div>\n\t</li>\n\t\t<li class=\"list-group-item\">\n\t\t<div class=\"row\">\n\t\t\t<div class=\"col-md-4\">\n\t\t\t\t<label>tcc</label>\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tinteger\n\t\t\t</div>\n\t\t\t<div class=\"col-md-1\">\n\t\t\t\tObligatorio\n\t\t\t</div>\n\t\t\t<div class=\"col-md-6\">\n\t\t\t\tNúmero de Tarjeta Cliente Chilexpress (TCC) asociada al Multibulto.\n\t\t\t\t<br/>\n\t\t\t</div>\n\t\t</div>\n\t</li>\n</ul>",
+                    "content": {
+                        "application/json": {
+                            "example": {
+                                "glsReferenciaGrupo": "Claudio_004",
+                                "nroOt": 0,
+                                "tcc": 12123,
+                                "rut": 123123
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "<p></p><h4> Cuerpo de la respuesta</h4><p></p><ul class=\"list-group\">\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>data</label>\n            </div>\n            <div class=\"col-md-2\">\n                array\n            </div>\n            <div class=\"col-md-6\">\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>nroOt</label>\n            </div>\n            <div class=\"col-md-2\">\n                integer\n            </div>\n            <div class=\"col-md-6\">\n                Número de la Orden de Transporte (OT)\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>nombreRemitente</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Nombre del remitente.\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>nombreEntrega</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Nombre de quien que recibió la  Orden de Transporte (OT).\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>origen</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Nombre de la localidad de origen\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>codOrigen</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Código de la localidad de origen\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>destino</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Nombre de la localidad de destino.\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>codDestino</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Código de la localidad de destino.\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>pesoOT</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Peso de la Orden de Transporte (OT).\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>dimensiones</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Medidas de encomienda.\n            </div>\n        </div>\n    </li><li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>direccionDestino</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Dirección del Destino de la Orden de Transporte (OT).\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>codEstado</label>\n            </div>\n            <div class=\"col-md-2\">\n                integer\n            </div>\n            <div class=\"col-md-6\">\n                Código del estado de la Orden de Transporte (OT).\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>glsEstado</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Estado de la Orden de Transporte (OT).\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>glsReferenciaGrupo</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Código de referencia Multibulto.\n            </div>\n        </div>\n    </li>\n    <li class=\"list-group-item\">\n        <div class=\"row\">\n            <div class=\"col-md-4\">\n                <label>fechaCreacion</label>\n            </div>\n            <div class=\"col-md-2\">\n                string\n            </div>\n            <div class=\"col-md-6\">\n                Fecha de creación de la Orden de Transporte (OT).\n            </div>\n        </div>\n    </li>\n</ul>",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "data": [
+                                        {
+                                            "nroOt": 696654314790,
+                                            "nombreRemitente": "Claudio Quiroz",
+                                            "nombreEntrega": "Esteban Carrasco",
+                                            "origen": "SANTIAGO CENTRO",
+                                            "codOrigen": "STGO",
+                                            "destino": "LAS CONDES",
+                                            "codDestino": "LCON",
+                                            "codEstado": 14,
+                                            "glsEstado": "ENTREGADO A DESTINATARIO",
+                                            "glsReferenciaGrupo": "Claudio_004",
+                                            "fechaCreacion": "2024-01-12T00:12:54.0000000+00:00"
+                                        },
+                                        {
+                                            "nroOt": 696654314801,
+                                            "nombreRemitente": "Claudio Quiroz",
+                                            "nombreEntrega": "Esteban Carrasco",
+                                            "origen": "SANTIAGO CENTRO",
+                                            "codOrigen": "STGO",
+                                            "destino": "LAS CONDES",
+                                            "codDestino": "LCON",
+                                            "codEstado": 14,
+                                            "glsEstado": "ENTREGADO A DESTINATARIO",
+                                            "glsReferenciaGrupo": "Claudio_004",
+                                            "fechaCreacion": "2024-01-12T00:12:54.0000000+00:00"
+                                        }
+                                    ],
+                                    "statusCode": 0,
+                                    "statusDescription": "Extraccion exitosa",
+                                    "errors": null
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "statusCode": 401,
+                                    "message": "Access denied due to invalid subscription key. Make sure to provide a valid key for an active subscription."
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "statusCode": 404,
+                                    "message": "Resource not found"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server Error",
+                        "content": {
+                            "application/json": {
+                                "example": {
+                                    "statusCode": 500,
+                                    "message": "Internal Server Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "TrackingRequest": {
+                "type": "object",
+                "properties": {
+                    "transportOrderNumber": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "reference": {
+                        "type": "string"
+                    },
+                    "rut": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "showTrackingEvents": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "example": "{\n\t\"reference\": \"27699451457\",\n\t\"transportOrderNumber\": 99726299584,\n\t\"rut\": 77398220,\n\t\"showTrackingEvents\" : 1\n}"
+            },
+            "BulkTrackingRequest": {
+                "type": "object",
+                "properties": {
+                    "trackingInput": {
+                        "uniqueItems": false,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/BulkTrackingInput"
+                        }
+                    },
+                    "rut": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "showTrackingEvents": {
+                        "type": "boolean"
+                    }
+                },
+                "example": "{\n  \"rut\": 77398220,\n  \"showTrackingEvents\": true,\n  \"trackingInput\": [\n    {\n      \"reference\": \"AS2313\",\n      \"transportOrderNumber\": 99714034545\n    },\n    {\n      \"reference\": \"reference\",\n      \"transportOrderNumber\": 712000421322\n    }\n  ]\n}\n"
+            },
+            "BulkTrackingInput": {
+                "type": "object",
+                "properties": {
+                    "transportOrderNumber": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "reference": {
+                        "type": "string"
+                    }
+                }
+            },
+            "PendingEventsRequest": {
+                "type": "object",
+                "properties": {
+                    "rut": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                }
+            },
+            "TransportOrderRequestDTODetail": {
+                "type": "object",
+                "properties": {
+                    "addresses": {
+                        "uniqueItems": false,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TransportOrderAddress"
+                        }
+                    },
+                    "contacts": {
+                        "uniqueItems": false,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TransportOrderContact"
+                        }
+                    },
+                    "packages": {
+                        "uniqueItems": false,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Package"
+                        }
+                    }
+                }
+            },
+            "CertificateToClose": {
+                "type": "object",
+                "properties": {
+                    "certificateNumber": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "certificateType": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "dropNumber": {
+                        "type": "number",
+                        "format": "double"
+                    }
+                },
+                "example": "{\n  \"certificateNumber\": 712000001554,\n  \"certificateType\": 1,\n  \"dropNumber\": 0\n}"
+            },
+            "TransportOrderLabelRequest": {
+                "type": "object",
+                "properties": {
+                    "transportOrderNumber": {
+                        "type": "number",
+                        "format": "double"
+                    },
+                    "labelType": {
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                },
+                "example": "{\n  \"transportOrderNumber\": 712019368141,\n  \"labelType\": 0\n}"
+            },
+            "TransportOrderRequestDTO": {
+                "type": "object",
+                "properties": {
+                    "header": {
+                        "$ref": "#/components/schemas/TransportOrderRequestDTOHeader"
+                    },
+                    "details": {
+                        "uniqueItems": false,
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TransportOrderRequestDTODetail"
+                        }
+                    }
+                },
+                "example": "{\n  \"header\": {\n    \"certificateNumber\": 0,\n    \"customerCardNumber\": \"18578680\",\n    \"countyOfOriginCoverageCode\": \"PUDA\",\n    \"labelType\": 2,\n    \"marketplaceRut\": \"96756430\",\n    \"sellerRut\": \"DEFAULT\"\n  },\n  \"details\": [\n    {\n      \"addresses\": [\n        {\n          \"addressId\": 0,\n          \"countyCoverageCode\": \"PROV\",\n          \"streetName\": \"AVENIDA MANUEL MONTT 427\",\n          \"streetNumber\": 0,\n          \"supplement\": \"\",\n          \"addressType\": \"DEST\",\n          \"deliveryOnCommercialOffice\": true,\n          \"commercialOfficeId\": \"706\",\n          \"observation\": \"DEFAULT\"\n        },\n        {\n          \"addressId\": 0,\n          \"countyCoverageCode\": \"PLCA\",\n          \"streetName\": \"SARMIENTO\",\n          \"streetNumber\": 120,\n          \"supplement\": \"DEFAULT\",\n          \"addressType\": \"DEV\",\n          \"deliveryOnCommercialOffice\": false,\n          \"observation\": \"DEFAULT\"\n        }\n      ],\n      \"contacts\": [\n        {\n          \"name\": \"Claudia Estevez\",\n          \"phoneNumber\": \"223824861\",\n          \"mail\": \"cestevez@chilexpress.cl\",\n          \"contactType\": \"R\"\n        },  \n        {\n          \"name\": \"Marcela Vera\",\n          \"phoneNumber\": \"227665433\",\n          \"mail\": \"mevera@chilexpress.cl\",\n          \"contactType\": \"D\"\n        }\n      ],\n      \"packages\": [\n        {\n          \"weight\": \"1\",\n          \"height\": \"1\",\n          \"width\": \"1\",\n          \"length\": \"1\",\n          \"serviceDeliveryCode\": \"3\",\n          \"productCode\": \"3\",\n          \"deliveryReference\": \"TEST-EOC-17\",\n          \"groupReference\": \"GRUPO\",\n          \"declaredValue\": \"1000\",\n          \"declaredContent\": \"1\",\n          \"receivableAmountInDelivery\": 1000\n        }\n      ]\n    }\n  ]\n}"
+            },
+            "TransportOrderRequestDTOHeader": {
+                "type": "object",
+                "properties": {
+                    "certificateNumber": {
+                        "type": "integer",
+                        "description": "Número de certificado, si no se ingresa se creará uno nuevo",
+                        "format": "int64"
+                    },
+                    "customerCardNumber": {
+                        "type": "string",
+                        "description": "Número de Tarjeta Cliente Chilexpress (TCC). TCC pruebas = 18578680"
+                    },
+                    "countyOfOriginCoverageCode": {
+                        "type": "string",
+                        "description": "Código de cobertura de origen obtenido por la API Consultar Coberturas"
+                    },
+                    "labelType": {
+                        "type": "integer",
+                        "description": "Tipo de etiqueta; 0 = Solo Datos;1 = EPL Impresora Zebra + Datos;2 = Imagen en Binario + Datos",
+                        "format": "int32"
+                    },
+                    "marketplaceRut": {
+                        "type": "string",
+                        "description": "Rut asociado al Marketplace sin puntos ni digito verificador. RUT pruebas = 96756430"
+                    },
+                    "sellerRut": {
+                        "type": "string",
+                        "description": "Rut asociado al Vendedor sin puntos ni digito verificador. RUT pruebas = 96756430"
+                    }
+                },
+                "example": {
+                    "certificateNumber": 0,
+                    "customerCardNumber": "string",
+                    "countyOfOriginCoverageCode": "string",
+                    "labelType": 0,
+                    "marketplaceRut": "string",
+                    "sellerRut": "string"
+                }
+            },
+            "TransportOrderContact": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Nombre de contacto"
+                    },
+                    "phoneNumber": {
+                        "type": "string",
+                        "description": "Teléfono de contacto"
+                    },
+                    "mail": {
+                        "type": "string",
+                        "description": "Correo electrónico de contacto"
+                    },
+                    "contactType": {
+                        "type": "string",
+                        "description": "Tipo de contacto; Destinatario (D), Remitente (R)"
+                    }
+                },
+                "example": {
+                    "name": "string",
+                    "phoneNumber": "string",
+                    "mail": "string",
+                    "contactType": "string"
+                }
+            },
+            "Package": {
+                "type": "object",
+                "properties": {
+                    "weight": {
+                        "type": "string",
+                        "description": "Peso en kilogramos, separado por punto"
+                    },
+                    "height": {
+                        "type": "string",
+                        "description": "Altura en centímetros, separado por punto"
+                    },
+                    "width": {
+                        "type": "string",
+                        "description": "Ancho en centímetros, separado por punto"
+                    },
+                    "length": {
+                        "type": "string",
+                        "description": "Largo en centímetros, separado por punto "
+                    },
+                    "serviceDeliveryCode": {
+                        "type": "string",
+                        "description": "Código del servicio de entrega, obtenido de la API Cotización "
+                    },
+                    "productCode": {
+                        "type": "string",
+                        "description": "Código del tipo de roducto a enviar; 1 = Documento, 3 = Encomienda "
+                    },
+                    "deliveryReference": {
+                        "type": "string",
+                        "description": "Referencia que permite identificar el envío por parte del cliente."
+                    },
+                    "groupReference": {
+                        "type": "string",
+                        "description": "Referencia que permite identificar un grupo de bultos que va por parte del cliente."
+                    },
+                    "declaredValue": {
+                        "type": "string",
+                        "description": "Valor declarado del producto"
+                    },
+                    "declaredContent": {
+                        "type": "string",
+                        "description": "Tipo de producto enviado: 1 = Artículos Personales, 10000331 = Celular, 2 = Educación, 4 = Vestuario, 5 = Otros, 7 = Tecnología"
+                    },
+                    "receivableAmountInDelivery": {
+                        "type": "integer",
+                        "description": "Monto a cobrar, en caso que el cliente tenga habilitada esta opción.",
+                        "format": "int32"
+                    }
+                },
+                "example": {
+                    "weight": "string",
+                    "height": "string",
+                    "width": "string",
+                    "length": "string",
+                    "serviceDeliveryCode": "string",
+                    "productCode": "string",
+                    "deliveryReference": "string",
+                    "groupReference": "string",
+                    "declaredValue": "string",
+                    "declaredContent": "string",
+                    "receivableAmountInDelivery": 0
+                }
+            },
+            "ResponseTracking": {
+                "type": "object",
+                "properties": {
+                    "data": {
+                        "type": "object",
+                        "properties": {
+                            "addressData": {
+                                "type": "object",
+                                "properties": {
+                                    "destinationCoverageCode": {
+                                        "type": "string"
+                                    },
+                                    "originCoverageCode": {
+                                        "type": "string"
+                                    },
+                                    "address": {
+                                        "type": "string"
+                                    },
+                                    "latitude": {
+                                        "type": "string"
+                                    },
+                                    "longitude": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "deliveryData": {
+                                "type": "object",
+                                "properties": {
+                                    "receptorRut": {
+                                        "type": "string"
+                                    },
+                                    "receptorName": {
+                                        "type": "string"
+                                    },
+                                    "deliveryDate": {
+                                        "type": "string"
+                                    },
+                                    "deliveryHour": {
+                                        "type": "string"
+                                    },
+                                    "deliveryDateTime": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "trackingEvents": {
+                                "type": "array",
+                                "items": {
+                                    "required": [
+                                        "eventDate",
+                                        "eventHour",
+                                        "description",
+                                        "motive",
+                                        "location",
+                                        "latitude",
+                                        "longitude",
+                                        "eventDateTime",
+                                        "officeId",
+                                        "code"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "eventDate": {
+                                            "type": "string"
+                                        },
+                                        "eventHour": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        },
+                                        "motive": {},
+                                        "location": {},
+                                        "latitude": {
+                                            "type": "string"
+                                        },
+                                        "longitude": {
+                                            "type": "string"
+                                        },
+                                        "eventDateTime": {
+                                            "type": "string"
+                                        },
+                                        "officeId": {
+                                            "type": "string"
+                                        },
+                                        "code": {
+                                            "type": "object",
+                                            "properties": {
+                                                "eventCode": {
+                                                    "type": "string"
+                                                },
+                                                "compEventCode": {
+                                                    "type": "string"
+                                                },
+                                                "clientEventCode": {
+                                                    "type": "string"
+                                                },
+                                                "clientCompEventCode": {
+                                                    "type": "string"
+                                                },
+                                                "clientEventDescription": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "internationalData": {
+                                "type": "object",
+                                "properties": {
+                                    "country": {
+                                        "type": "string"
+                                    },
+                                    "areaGuide": {
+                                        "type": "string"
+                                    },
+                                    "trackingNumber": {
+                                        "type": "string"
+                                    },
+                                    "courier": {
+                                        "type": "string"
+                                    },
+                                    "zipCode": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "transportOrderData": {
+                                "type": "object",
+                                "properties": {
+                                    "transportOrderNumber": {
+                                        "type": "string"
+                                    },
+                                    "certificateNumber": {
+                                        "type": "string"
+                                    },
+                                    "reference": {
+                                        "type": "string"
+                                    },
+                                    "product": {
+                                        "type": "string"
+                                    },
+                                    "service": {
+                                        "type": "string"
+                                    },
+                                    "dimensions": {
+                                        "type": "string"
+                                    },
+                                    "weight": {
+                                        "type": "string"
+                                    },
+                                    "status": {
+                                        "type": "string"
+                                    },
+                                    "locationStatus": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "statusCode": {
+                        "type": "integer"
+                    },
+                    "statusDescription": {
+                        "type": "string"
+                    },
+                    "errors": {}
+                }
+            },
+            "TransportOrderAddress": {
+                "type": "object",
+                "properties": {
+                    "addressId": {
+                        "type": "integer",
+                        "description": " Id de la dirección obtenida de la API Georeferenciar dirección",
+                        "format": "int32"
+                    },
+                    "countyCoverageCode": {
+                        "type": "string",
+                        "description": "Cobertura de destino obtenido por la API Consultar Coberturas"
+                    },
+                    "streetName": {
+                        "type": "string",
+                        "description": "Nombre de la calle"
+                    },
+                    "streetNumber": {
+                        "type": "string",
+                        "description": "Numeración de la calle"
+                    },
+                    "supplement": {
+                        "type": "string",
+                        "description": "Información complementaria de la dirección, ejemplo Dpto 301"
+                    },
+                    "addressType": {
+                        "type": "string",
+                        "description": "Tipo de dirección; DEST = Entrega, DEV = Devolución."
+                    },
+                    "deliveryOnCommercialOffice": {
+                        "type": "boolean",
+                        "description": "Indicador si es una entrega en oficina comercial (true) o entrega en domicilio (false). En caso de ser (true), se debe agregar el campo commercialOfficeId con el código de Sucursal obtenido por la API Oficinas de Entrega"
+                    },
+                    "commercialOfficeId": {
+                        "type": "integer",
+                        "description": "Código de Sucursal obtenido por la API Oficinas de Entrega",
+                        "format": "int32"
+                    },
+                    "observation": {
+                        "type": "string",
+                        "description": "Observaciones adicionales"
+                    }
+                },
+                "example": {
+                    "addressId": 0,
+                    "countyCoverageCode": "string",
+                    "streetName": "string",
+                    "streetNumber": "string",
+                    "supplement": "string",
+                    "addressType": "string",
+                    "deliveryOnCommercialOffice": false,
+                    "observation": "string"
+                }
+            }
+        },
+        "securitySchemes": {
+            "apiKeyHeader": {
+                "type": "apiKey",
+                "name": "Ocp-Apim-Subscription-Key",
+                "in": "header"
+            },
+            "apiKeyQuery": {
+                "type": "apiKey",
+                "name": "subscription-key",
+                "in": "query"
+            }
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ]
+}

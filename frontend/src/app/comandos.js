@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-export const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,{
+export const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
@@ -16,52 +16,50 @@ export const supabase_admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL,
 })
 
 export const seleccionar = async () => {
-    const { data, error } = await supabase.from('usuarios').select()
-    if(data == null){
-      console.log("Error en la seleccion. Intente de nuevo")
-    }
-    else{
-      console.log(data)
-    }
+  const { data, error } = await supabase.from('usuarios').select()
+  if (data == null) {
+    console.log("Error en la seleccion. Intente de nuevo")
   }
+  else {
+    console.log(data)
+  }
+}
 
-
-export const registrar = async (name,password = '') =>{
-    const id = Date.now() + Math.floor(Math.random()*1000)
-    const { error } = await supabase
-  .from('usuarios')
-  .insert({ id: id, nombre: name, contraseña: password })
+export const registrar = async (name, password = '') => {
+  const id = Date.now() + Math.floor(Math.random() * 1000)
+  const { error } = await supabase
+    .from('usuarios')
+    .insert({ id: id, nombre: name, contraseña: password })
 }
 
 export const fetchProductos = async () => {
   const { data, error } = await supabase.from('productos').select()
-  if(data == null){
+  if (data == null) {
     console.log("Error en la seleccion. Intente de nuevo", error);
     return [];
   }
-  else{
+  else {
     return data;
   }
 }
 
-
 export const subirProducto = async (producto_nuevo) => {
-  const {data,error} = await supabase.from('productos').insert([
+  const { data, error } = await supabase.from('productos').insert([
     {
       nombre: producto_nuevo.name,
       precio: producto_nuevo.price,
       tipe: producto_nuevo.type,
       categoria: producto_nuevo.category,
-      tamaño:   { tallas: producto_nuevo.sizes.tallas },
+      tamaño: { tallas: producto_nuevo.sizes.tallas },
       codigo: producto_nuevo.code,
       imagen: producto_nuevo.image
     }
   ])
-  if (!error){
-    console.log("Producto subido correctamente:", );
+  if (!error) {
+    console.log("Producto subido correctamente:",);
     return true;
   }
-  else{
+  else {
     console.log("Error al subir el producto:", error);
     return false;
   }
