@@ -184,7 +184,7 @@ export default function Homepage() {
       password_register !== " " &&
       password_confirm !== " " &&
       password_register === password_confirm &&
-      !users.some((user) => user.username === username) && password_register.length >= 6
+     password_register.length >= 6
     ) {
       registrar(username, password_register)
 

@@ -9,6 +9,8 @@ import { fetchProductos } from "@/app/comandos";
 import { supabase } from "@/app/comandos";
 import { subirProducto } from "@/app/comandos";
 import { v4 } from "uuid";
+import { GoogleGenerativeAI } from "@/app/comandos";
+import isLoading from "react";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -42,6 +44,9 @@ export default function ProductPage() {
     image: null,
   });
   const [arrayProductos, setArrayProductos] = useState([]);
+  const [analisis_tendencia, setAnalisisTendencia] = useState(false);
+  const [frase_ia, setFraseIa] = useState('Bienvenido')
+  
 
   useEffect(() => {
     const obtenerProductos = async () => {
@@ -49,6 +54,50 @@ export default function ProductPage() {
     };
     obtenerProductos();
   }, []);
+  const genAI= new GoogleGenerativeAI("AIzaSyAt7iJuX_isvrvsYwPzDiMyBO2mj3m5QyA");
+  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+  const generarpresentacion = async () => {
+    const contexto = "Soy un asistente virtual que puede ayudarte a resolver tus dudas acerca de los productos de tu bodega. ¿En qué puedo ayudarte?";
+    const frase = "Muestra lo siguiente y corrige ortografía de ser necesario (No muestres si necesita o no correción): " + contexto;
+    const prompt = frase;
+    setFraseIa("Cargando...");
+    try {
+      const resultado = await model.generateContent(prompt);
+      setFraseIa(resultado.response.text());
+    } catch (error) {
+      setFraseIa("Error generando contenido:");
+    }
+  }
+  
+  const generarlistado = async () => {
+    const pregunta = `analiza los siguientes productos con las siguientes cosas y muestrame solo la conclusión:
+    tendencia\n
+    `;
+
+  const datos = arrayProductos.map((producto) => {
+    const tallas = producto.tamaño.tallas.map(t => t.talla).join(', ');
+    const disponibilidad = producto.tamaño.disponibilidad ? 'Disponible' : 'No disponible';
+    return `Id: ${producto.id}, Nombre: ${producto.nombre}, Precio: ${producto.precio}, tipe: ${producto.tipe}, categoria: ${producto.categoria}, tallas: ${tallas}, Disponibilidad: ${disponibilidad}, codigo: ${producto.codigo}`;
+  }).join('\n'); // Unir los elementos con saltos de línea
+    console.log(datos)
+    const prompt = pregunta + datos;
+    setFraseIa("Cargando...");
+    try {
+      const resultado = await model.generateContent(prompt);
+      setFraseIa(resultado.response.text());
+      console.log(resultado.response.text());
+    } catch (error) {
+      setFraseIa("Error generando contenido:");
+    }
+  }
+
+
+  const abrirAnalisisTendencia = () => {
+    setAnalisisTendencia(true);
+  }
+
+
 
   const handleQuickView = (product) => {
     setSelectedProduct(product);
@@ -96,7 +145,8 @@ export default function ProductPage() {
     const { name, value, files, options } = e.target;
     if (name === "image" || name === "imagen") {
       setNewProduct((prev) => ({ ...prev, [name]: files[0] }));
-    } else if (name === "disponibilidad") {
+    } 
+    else if (name === "disponibilidad") {
       setNewProduct((prev) => ({
         ...prev,
         sizes: {
@@ -118,7 +168,8 @@ export default function ProductPage() {
     } else if (name === "sizes") {
       const opciones_seleccionadas = Array.from(options)
         .filter((option) => option.selected)
-        .map((option) => ({ talla: option.value }));
+        .map((option) => ({ talla: option.value, disponibilidad: true }));
+
 
       setNewProduct((prev) => ({
         ...prev,
@@ -234,18 +285,27 @@ export default function ProductPage() {
     setEditProductOpen(false);
   };
 
+  const borrarImagen = async (product) => {
+    //console.log(product)
+    product = product.split('/').pop();
+    //console.log(product)
+    const {data, error} = await supabase.storage.from('imagenes').remove(['folder/',product]);
+  }
+
   const handleDeleteProduct = async (product) => {
     setIsSubmitting(true);
     console.log(product);
     console.log(product.id);
 
-    const { data, error } = await supabase
+
+   const { data, error } = await supabase
       .from("productos")
       .delete()
       .eq("id", product.id)
       .select();
     console.log("borrado:", product);
     setArrayProductos(arrayProductos.filter((p) => p.id !== product.id));
+    borrarImagen(product.imagen);
 
     setIsSubmitting(false);
     setEditProductOpen(false);
@@ -477,6 +537,84 @@ export default function ProductPage() {
           Añadir producto
         </button>
       </div>
+      
+
+
+{'Boton de analisis de tendencia'}
+      <div className="fixed bottom-16 right-4">
+        <button
+          className=" bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-800 focus:ring-offset-2 transition"
+          onClick={abrirAnalisisTendencia}>
+          Asistente
+        </button>
+      </div>
+      <Transition.Root show={analisis_tendencia} as={React.Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={setAnalisisTendencia}>
+        <Transition.Child
+          as={React.Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 z-10 overflow-y-auto">
+          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+            <Transition.Child
+              as={React.Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                <div>
+                  <div className="flex justify-end">
+                   <button
+                   type="button"
+                   className="text-white text-center text-sm bg-blue-600 inline-flex rounded-md p-1 hover:bg-blue-700 hover:ring-2 transition"
+                   onClick={setAnalisisTendencia}
+                   >Salir</button> 
+                  </div>
+                  <div className="mt-3 text-center sm:mt-5">
+                    <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+                      Asistente
+                    </Dialog.Title>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        {frase_ia}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-5 sm:mt-5">
+                  <button 
+                  type="button"
+                  className="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none  sm:text-md"
+                  onClick={() => generarpresentacion()}
+                  
+                  >Presentación</button>
+                  </div>
+                <div className="mt-5 sm:mt-5">
+                  <button
+                  type="button"
+                  className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-4 py-2 border border-transparent text-white text-base font-medium shadow-sm hover:bg-indigo-700 transition hover:ring-4 sm:text-md"
+                  onClick={generarlistado}>
+                    Listado de nis productos
+                  </button>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition.Root>
 
       <Transition.Root show={addProductOpen} as={React.Fragment}>
         <Dialog as="div" className="relative z-10" onClose={setAddProductOpen}>
@@ -491,6 +629,7 @@ export default function ProductPage() {
           >
             <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
           </Transition.Child>
+          
 
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -524,6 +663,7 @@ export default function ProductPage() {
                                 value={newProduct.name}
                                 onChange={handleNewProductChange}
                                 className="mt-5 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm text-center"
+                                required
                               />
                             </div>
                           </div>
@@ -625,20 +765,21 @@ export default function ProductPage() {
                               Tallas
                             </label>
                             <div className="mt-1">
-                              <select
-                                id="sizes"
-                                name="sizes"
-                                multiple
-                                value={newProduct.sizes.tallas}
-                                onChange={handleNewProductChange}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              >
-                                {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-                                  <option key={size} value={size}>
-                                    {size}
-                                  </option>
-                                ))}
-                              </select>
+                              {["XXS", "XS", "S", "M", "L", "XL", "XXL"].map((size)=> (
+                                <div key={size} className="flex items-center">
+                                  <input 
+                                  type="checkbox"
+                                  id={`size-${size}`}
+                                  name="sizes"
+                                  value={size}
+                                  checked={newProduct.sizes.tallas.includes(size)}
+                                  onChange={handleNewProductChange}
+                                  className="mr-2"
+                                  onClick={(e) =>{console.log(e.target.value)}}
+                                  />
+                                  <label htmlFor={`size-${size}`}>{size}</label>
+                                </div>
+                              ))}
                             </div>
                           </div>
 
