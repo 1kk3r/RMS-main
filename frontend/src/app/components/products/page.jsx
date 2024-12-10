@@ -96,6 +96,9 @@ export default function ProductPage() {
   const abrirAnalisisTendencia = () => {
     setAnalisisTendencia(true);
   }
+  const cerrarAnalisisTendencia = () => {
+    setAnalisisTendencia(false);
+  }
 
 
 
@@ -579,7 +582,7 @@ export default function ProductPage() {
                    <button
                    type="button"
                    className="text-white text-center text-sm bg-blue-600 inline-flex rounded-md p-1 hover:bg-blue-700 hover:ring-2 transition"
-                   onClick={setAnalisisTendencia}
+                   onClick={cerrarAnalisisTendencia}
                    >Salir</button> 
                   </div>
                   <div className="mt-3 text-center sm:mt-5">
