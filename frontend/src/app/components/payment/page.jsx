@@ -1,36 +1,54 @@
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { WebpayPlus } from "transbank-sdk";
+
+// Configura Transbank para pruebas
+WebpayPlus.configureForTesting();
 
 export function WebpayCheckout({ amount, items }) {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleWebpayCheckout = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      const response = await fetch('/api/create-webpay-transaction', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ amount, items }),
-      })
+      const buyOrder = `O-${Date.now()}`;
+      const sessionId = `S-${Date.now()}`;
+      const returnUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/webpay/commit`;
 
-      if (!response.ok) {
-        throw new Error('Failed to create Webpay transaction')
+      const createResponse = await new WebpayPlus.Transaction().create(
+        buyOrder,
+        sessionId,
+        amount,
+        returnUrl
+      );
+
+      const token = createResponse.token;
+      const url = createResponse.url;
+
+      const viewData = {
+        buyOrder,
+        sessionId,
+        amount,
+        returnUrl,
+        token,
+        url,
+      };
+
+      if (createResponse && createResponse.token && createResponse.url) {
+        router.push(createResponse.url);
+      } else {
+        throw new Error("La respuesta no contiene una URL válida.");
       }
-
-      const { url, token } = await response.json()
-
-      // Redirect to Webpay
-      router.push(url, { scroll: false })
     } catch (error) {
-      console.error('Error creating Webpay transaction:', error)
-      alert('Hubo un error al procesar el pago. Por favor, intente nuevamente.')
+      console.error("Error creando la transacción:", error);
+      alert(
+        "Hubo un error al procesar el pago. Por favor, intente nuevamente."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <button
@@ -38,7 +56,7 @@ export function WebpayCheckout({ amount, items }) {
       disabled={isLoading}
       className="mt-6 w-full bg-blue-600 text-white rounded-lg py-2 hover:bg-blue-700 transition-colors"
     >
-      {isLoading ? 'Procesando...' : 'Pagar con Webpay Plus'}
+      {isLoading ? "Procesando..." : "Pagar con Webpay Plus"}
     </button>
-  )
+  );
 }

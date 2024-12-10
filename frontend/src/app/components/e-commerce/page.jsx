@@ -6,6 +6,7 @@ import { XIcon, ShoppingCartIcon, SearchIcon, TrashIcon } from 'lucide-react';
 import Image from 'next/image';
 import { fetchProductos, supabase } from '@/app/comandos';
 import { WebpayCheckout } from '../payment/page';
+import { v4 } from "uuid";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ')
@@ -395,7 +396,7 @@ export default function EcommerceWithCheckout() {
               <div className="space-y-8">
                 {/* Contact Information */}
                 <section>
-                  <h2 className="text-lg font-medium">Información de Pedido</h2>
+                  <h2 className="text-lg font-medium">Información del Pedido</h2>
                   <div className="mt-4">
                     <label htmlFor="email" className="block text-sm font-medium">
                       Email
@@ -411,7 +412,7 @@ export default function EcommerceWithCheckout() {
 
                 {/* Shipping Information */}
                 <section>
-                  <h2 className="text-lg font-medium">Shipping information</h2>
+                  <h2 className="text-lg font-medium">Dirección del Pedido</h2>
                   <div className="mt-4 grid gap-4">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -458,6 +459,17 @@ export default function EcommerceWithCheckout() {
                       />
                     </div>
 
+                    <div>
+                      <label htmlFor="rut" className="block text-sm font-medium">
+                        RUT
+                      </label>
+                      <input
+                        id="rut"
+                        className="mt-1 w-full rounded border border-gray-300 px-4 py-2"
+                        placeholder="RUT"
+                      />
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <label htmlFor="Comuna" className="block text-sm font-medium">
@@ -477,22 +489,22 @@ export default function EcommerceWithCheckout() {
                           id="region"
                           className="mt-1 w-full rounded border border-gray-300 px-4 py-2"
                         >
-                          <option value="us">XV Región de Arica y Parinacota</option>
-                          <option value="ca">I Región de Tarapacá</option>
-                          <option value="mx">II Región de Antofagasta</option>
-                          <option value="mx">III Región de Atacama</option>
-                          <option value="mx">IV Región de Coquimbo</option>
-                          <option value="mx">V Región de Valparaíso</option>
-                          <option value="mx">Región Metropolitana RM</option>
-                          <option value="mx">VI Región de O’Higgins</option>
-                          <option value="mx">VII Región del Maule</option>
-                          <option value="mx">XVI Región de Ñuble</option>
-                          <option value="mx">VIII Región del Biobío</option>
-                          <option value="mx">IX Región de La Araucanía</option>
-                          <option value="mx">XIV Región de Los Ríos</option>
-                          <option value="mx">X Región de Los Lagos</option>
-                          <option value="mx">XI Región de Aysén</option>
-                          <option value="mx">XII Región de Magallanes y de la Antártica Chilena</option>
+                          <option value="xv">XV Región de Arica y Parinacota</option>
+                          <option value="i">I Región de Tarapacá</option>
+                          <option value="ii">II Región de Antofagasta</option>
+                          <option value="iii">III Región de Atacama</option>
+                          <option value="iv">IV Región de Coquimbo</option>
+                          <option value="v">V Región de Valparaíso</option>
+                          <option value="rm">Región Metropolitana RM</option>
+                          <option value="vi">VI Región de O’Higgins</option>
+                          <option value="vii">VII Región del Maule</option>
+                          <option value="xvi">XVI Región de Ñuble</option>
+                          <option value="viii">VIII Región del Biobío</option>
+                          <option value="ix">IX Región de La Araucanía</option>
+                          <option value="xiv">XIV Región de Los Ríos</option>
+                          <option value="x">X Región de Los Lagos</option>
+                          <option value="xi">XI Región de Aysén</option>
+                          <option value="xii">XII Región de Magallanes y de la Antártica Chilena</option>
                         </select>
                       </div>
                     </div>
@@ -559,15 +571,11 @@ export default function EcommerceWithCheckout() {
                   <div className="mt-6 space-y-4">
                     <div className="flex justify-between">
                       <span>Subtotal</span>
-                      <span>${nuevo_subtotal.toFixed(2)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Shipping</span>
-                      <span>$5.00</span>
+                      <span>${nuevo_subtotal.toFixed()}</span>
                     </div>
                     <div className="flex justify-between border-t pt-4 font-medium">
                       <span>Total</span>
-                      <span>${(nuevo_subtotal + 5).toFixed(2)}</span>
+                      <span>${(nuevo_subtotal).toFixed()}</span>
                     </div>
                   </div>
 
@@ -605,7 +613,7 @@ export default function EcommerceWithCheckout() {
                       Confirmar orden
                     </button>
                   ) : (
-                    <WebpayCheckout amount={nuevo_subtotal + 5} items={cart} />
+                    <WebpayCheckout amount={nuevo_subtotal} items={cart} />
                   )}
 
                   <button
