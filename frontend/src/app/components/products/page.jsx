@@ -145,18 +145,9 @@ export default function ProductPage() {
   };
 
   const handleNewProductChange = (e) => {
-    const { name, value, files, options } = e.target;
+    const { name, value, files, options, checked } = e.target;
     if (name === "image" || name === "imagen") {
       setNewProduct((prev) => ({ ...prev, [name]: files[0] }));
-    } 
-    else if (name === "disponibilidad") {
-      setNewProduct((prev) => ({
-        ...prev,
-        sizes: {
-          ...prev.sizes,
-          disponibilidad: value,
-        },
-      }));
     } else if (name === "price") {
       const numericValue = value.replace(/[^0-9]/g, "");
       const numericfinal = parseFloat(numericValue);
@@ -168,34 +159,39 @@ export default function ProductPage() {
           formattedValue.slice(0, 6) + "-" + formattedValue.slice(6);
       }
       setNewProduct((prev) => ({ ...prev, [name]: formattedValue }));
-    } else if (name === "sizes") {
-      const opciones_seleccionadas = Array.from(options)
-        .filter((option) => option.selected)
-        .map((option) => ({ talla: option.value, disponibilidad: true }));
+        } else if (name.startsWith("size-")) {
+      const size = name.split("size-")[1];
+      const selectedSizes = checked
+        ? [...newProduct.sizes.tallas, { talla: size, disponibilidad: newProduct.sizes.disponibilidad }]
+        : newProduct.sizes.tallas.filter((t) => t.talla !== size);
 
-
-      setNewProduct((prev) => ({
-        ...prev,
-        sizes: {
-          ...prev.sizes,
-          tallas: opciones_seleccionadas,
-        },
-      }));
-      const arreglo_final = opciones_seleccionadas.map((opcion) => ({
-        talla: opcion.talla,
-        disponibilidad: newProduct.sizes.disponibilidad,
-      }));
-
-      console.log(arreglo_final);
+      const filteredSizes = selectedSizes.filter((size) => size !== undefined);
 
       setNewProduct((prev) => ({
         ...prev,
         sizes: {
           ...prev.sizes,
-          tallas: arreglo_final,
+          tallas: filteredSizes,
         },
       }));
-    } else {
+
+      const selectedSizeLabels = filteredSizes.map((s) => s.talla);
+      console.log("Tallas seleccionadas:", selectedSizeLabels);
+  } else if (name === 'disponibilidad') {
+    const updatedSizes = newProduct.sizes.tallas.map(t => ({
+      ...t,
+      disponibilidad: value === 'true'
+    }));
+
+    setNewProduct(prev => ({
+      ...prev,
+      sizes: {
+        ...prev.sizes,
+        disponibilidad: value,
+        tallas: updatedSizes
+      }
+    }));
+  } else {
       setNewProduct((prev) => ({ ...prev, [name]: value }));
     }
   };
@@ -266,9 +262,49 @@ export default function ProductPage() {
       image: product.imagen,
     });
   };
+  const uploadImage = async (image,product) => {
+    if (image != null) {
+      const { data, error } = await supabase.storage
+        .from("imagenes")
+        .upload(v4(), image, { cacheControl: "3600" });
+      console.log("Imagen subida:", data);
+      if (error) {
+        console.log("Error:", error);
+      } else {
+        console.log("Imagen subida correctamente:", data.path);
+        const { data: urlData } = supabase.storage
+          .from("imagenes")
+          .getPublicUrl(data.path);
+        console.log("URL de la imagen:", urlData.publicUrl);
+        image = urlData.publicUrl;
+        const { data, error } = await supabase
+          .from("productos")
+          .update([
+            {
+              nombre: product.name,
+              precio: product.price,
+              tipe: product.type,
+              categoria: product.category,
+              tamaño: { tallas: product.sizes.tallas },
+              codigo: product.code,
+              imagen: image,
+            },
+          ])
+          .eq("id", product.id)
+          .select();
+          
+      }
+    }else{
+      console.log("No hay imagen");
+    }
+  };
+
+  
 
   const actualizarProducto = async (product) => {
     console.log(product.id);
+    uploadImage(product.image,product);
+ 
 
     const { data, error } = await supabase
       .from("productos")
@@ -681,6 +717,7 @@ export default function ProductPage() {
                             <div className="mt-1 relative rounded-md shadow-sm">
                               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3"></div>
                               <input
+                                required
                                 type="text"
                                 name="price"
                                 id="price"
@@ -701,6 +738,7 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <select
+                                required
                                 id="type"
                                 name="type"
                                 value={newProduct.type}
@@ -724,6 +762,7 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <select
+                                required
                                 id="category"
                                 name="category"
                                 value={newProduct.category}
@@ -748,6 +787,7 @@ export default function ProductPage() {
                           </label>
                           <div className="mt-1">
                             <select
+                              required
                               id="disponibilidad"
                               name="disponibilidad"
                               value={newProduct.sizes.disponibilidad}
@@ -760,25 +800,24 @@ export default function ProductPage() {
                             </select>
                           </div>
 
-                          <div className="sm:col-span-3">
-                            <label
-                              htmlFor="sizes"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Tallas
-                            </label>
-                            <div className="mt-1">
-                              {["XXS", "XS", "S", "M", "L", "XL", "XXL"].map((size)=> (
+                          <div>
+                          <label>Tallas</label>
+                            <div className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                              {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
                                 <div key={size} className="flex items-center">
-                                  <input 
-                                  type="checkbox"
-                                  id={`size-${size}`}
-                                  name="sizes"
-                                  value={size}
-                                  checked={newProduct.sizes.tallas.includes(size)}
-                                  onChange={handleNewProductChange}
-                                  className="mr-2"
-                                  onClick={(e) =>{console.log(e.target.value)}}
+                                  <input
+                                    type="checkbox"
+                                    id={`size-${size}`}
+                                    name={`size-${size}`}
+                                    value={size}
+                                    checked={newProduct.sizes.tallas.some(t => t.talla === size)}
+                                    onChange={(e) => handleNewProductChange({
+                                      target: {
+                                        name: `size-${size}`,
+                                        checked: e.target.checked,
+                                      }
+                                    })}
+                                    className="mr-2"
                                   />
                                   <label htmlFor={`size-${size}`}>{size}</label>
                                 </div>
@@ -814,6 +853,7 @@ export default function ProductPage() {
                             </label>
                             <div className="mt-1">
                               <input
+                                required
                                 type="file"
                                 name="image"
                                 id="image"
@@ -989,22 +1029,27 @@ export default function ProductPage() {
                             >
                               Tamaños
                             </label>
-                            <div className="mt-1">
-                              <select
-                                id="sizes-quickview"
-                                name="sizes"
-                                multiple
-                                value={newProduct.sizes.tallas.map(t => t.talla)}
-                                onChange={handleNewProductChange}
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                              >
-                                {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
-                                  <option key={size} value={size}>
-                                    {size}
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
+                            <div className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+    {['XXS', 'XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+      <div key={size} className="flex items-center">
+        <input
+          type="checkbox"
+          id={`size-${size}`}
+          name={`size-${size}`}
+          value={size}
+          checked={newProduct.sizes.tallas.some(t => t.talla === size)}
+          onChange={(e) => handleNewProductChange({
+            target: {
+              name: `size-${size}`,
+              checked: e.target.checked,
+            }
+          })}
+          className="mr-2"
+        />
+        <label htmlFor={`size-${size}`}>{size}</label>
+      </div>
+    ))}
+  </div>
                           </div>
                           <div className="sm:col-span-3">
                             <label
@@ -1047,24 +1092,7 @@ export default function ProductPage() {
                             </div>
                           </div>
 
-                          <div className="sm:col-span-6">
-                            <label
-                              htmlFor="image-quickview"
-                              className="block text-sm font-medium text-gray-700"
-                            >
-                              Imagen de producto
-                            </label>
-                            <div className="mt-1">
-                              <input
-                                type="file"
-                                name="image"
-                                id="image-quickview"
-                                accept="image/*"
-                                onChange={handleNewProductChange}
-                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                              />
-                            </div>
-                          </div>
+
                         </div>
                         <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                           <button
@@ -1105,3 +1133,24 @@ export default function ProductPage() {
     </div>
   );
 }
+
+/*
+                          <div className="sm:col-span-6">
+                            <label
+                              htmlFor="image-quickview"
+                              className="block text-sm font-medium text-gray-700"
+                            >
+                              Imagen de producto
+                            </label>
+                            <div className="mt-1">
+                              <input
+                                type="file"
+                                name="image"
+                                id="image-quickview"
+                                accept="image/*"
+                                onChange={handleNewProductChange}
+                                className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+                              />
+                            </div>
+                          </div>
+*/
